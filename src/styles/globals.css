@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.flex-center {
+  @apply flex justify-center items-center
+}
+
+.wrapper {
+  @apply h-full w-full max-w-7xl px-4 py-4 md:px-12 lg:mx-auto xl:max-w-[90rem];
+}
+
+h1 {
+  @apply text-7xl
+}
+
+h2 {
+  @apply text-5xl
+}
+
+h3 {
+  @apply text-3xl
+}
+
+.input-style {
+  @apply p-4 mb:p-2 mb:placeholder:text-sm bg-[#474549] dark:bg-black placeholder:font-semibold placeholder:text-xl rounded-sm focus:outline-none border-[2.5px] border-transparent dark:focus:border-blue-600 duration-100
+}
+
+.button-style {
+  @apply bg-black text-white dark:bg-white dark:text-black
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

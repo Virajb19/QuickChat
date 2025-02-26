@@ -6,6 +6,9 @@ export default {
     content: ["./src/**/*.tsx"],
   theme: {
   	extend: {
+		screens: {
+			'mb': {'max': '1024px'},
+		  },
   		fontFamily: {
   			sans: [
   				'var(--font-geist-sans)',
