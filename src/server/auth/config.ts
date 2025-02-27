@@ -4,7 +4,6 @@ import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import { SignInSchema } from "~/lib/zod";
 import bcrypt from 'bcrypt'
-
 import { db } from "~/server/db";
 
 declare module "next-auth" {
@@ -35,7 +34,6 @@ export const authConfig = {
           },
           signIn: async ({ user, account, profile}) => {
             try {
-               
               if(account?.provider && profile) {
        
                const provider = account.provider === 'github' ? 'GITHUB' : 'GOOGLE'

@@ -6,6 +6,7 @@ import Providers from "./providers";
 import NextTopLoader from 'nextjs-toploader';
 
 import { TRPCReactProvider } from "~/trpc/react";
+import Navbar from "~/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Quick Chat",
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en" className={`${grotesk.className} antialiased`} suppressHydrationWarning={true}>
       <body>
         <Providers>
+           <Navbar />
            <NextTopLoader height={4} color="#38bdf8" showSpinner={false} easing="ease"/>
            <TRPCReactProvider>{children}</TRPCReactProvider>
         </Providers>

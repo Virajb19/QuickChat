@@ -26,8 +26,59 @@ model User {
 
     OauthProvider OauthProvider?
     OauthId       String?
-    accounts      Account[]
-    sessions      Session[]
+
+    createdChats Chat[]
+    chats        ChatParticipant[]
+    sentMessages Message[]
+
+    accounts Account[]
+    sessions Session[]
+}
+
+model Chat {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    title    String
+    passcode String
+
+    ownerId Int
+    owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+    participants ChatParticipant[]
+    messages     Message[]
+}
+
+model ChatParticipant {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    joinedAt DateTime  @default(now())
+    leftAt   DateTime?
+
+    userId Int
+    user   User @relation(fields: [userId], references: [id])
+
+    chatId String
+    Chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, chatId])
+}
+
+model Message {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    content String
+
+    chatId String
+    Chat   Chat   @relation(fields: [chatId], references: [id])
+
+    senderId Int
+    sender   User @relation(fields: [senderId], references: [id])
 }
 
 // Necessary for Next auth

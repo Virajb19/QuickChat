@@ -41,14 +41,14 @@ export default function SignUp() {
       })
   }
 
-  return <div className="w-full min-h-screen flex-center text-lg">
+  return <div className="w-full min-h-screen pt-24 pb-5 flex-center text-lg">
 
     <motion.div initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration: 0.7, ease: 'easeInOut', type: 'spring', damping: '10'}} 
     className='w-[90%] sm:w-1/3 max-w-3xl z-30'>
               <Card className='shadow-lg shadow-blue-700'>
                 <CardHeader className='text-center'>
                    <CardTitle className='text-[1.8rem] sm:text-5xl'>
-                    Welcome to <span className='bg-gradient-to-b from-blue-400 to-blue-700 bg-clip-text pr-1 font-black tracking-tighter text-transparent'>GitChat</span>
+                    Welcome to <span className='bg-gradient-to-b from-blue-400 to-blue-700 bg-clip-text pr-1 font-black tracking-tighter text-transparent'>QuickChat</span>
                     </CardTitle>
                    <CardDescription className='sm:text-base'>Please enter your details to signup</CardDescription>
                 </CardHeader>
