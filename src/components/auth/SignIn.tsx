@@ -14,12 +14,16 @@ import PasswordInput from './PasswordInput'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
+import { useState } from 'react'
 
 type SignInData = z.infer<typeof SignInSchema>
 
 export default function SignIn() {
 
   const router = useRouter()
+
+  // shared loading state for OAuth buttons
+  const [loading,setLoading] = useState(false)
 
   const form = useForm<SignInData>({
     resolver: zodResolver(SignInSchema),
@@ -34,6 +38,7 @@ export default function SignIn() {
        return toast.error(error)
     }
     router.push('/')
+    router.refresh()
     toast.success('Login successfull!. Welcome back!')
   }
 
@@ -86,8 +91,8 @@ export default function SignIn() {
 
                         <DemarcationLine />
                         <div className='flex mb:flex-col items-center gap-1'>
-                        <OAuthButton label='Sign in with Github' provider='github'/>
-                        <OAuthButton label='Sign in with Google' provider='google'/>
+                        <OAuthButton label='Sign in with Github' provider='github' loading={loading} setLoading={setLoading}/>
+                        <OAuthButton label='Sign in with Google' provider='google' loading={loading} setLoading={setLoading}/>
                           </div>
 
                         </form>

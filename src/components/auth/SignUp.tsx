@@ -14,6 +14,7 @@ import PasswordInput from './PasswordInput'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { api } from '~/trpc/react'
+import { useState } from 'react'
 
 type SignUpData = z.infer<typeof SignUpSchema>
 
@@ -22,6 +23,8 @@ export default function SignUp() {
   const signup = api.user.signup.useMutation()
 
   const router = useRouter()
+
+  const [loading, setLoading] = useState(false)
 
   const form = useForm<SignUpData>({
     resolver: zodResolver(SignUpSchema),
@@ -106,8 +109,8 @@ export default function SignUp() {
 
                         <DemarcationLine />
                         <div className='flex mb:flex-col items-center gap-1'>
-                        <OAuthButton label='Sign up with Github' provider='github'/>
-                        <OAuthButton label='Sign up with Google' provider='google'/>
+                        <OAuthButton label='Sign up with Github' provider='github' loading={loading} setLoading={setLoading}/>
+                        <OAuthButton label='Sign up with Google' provider='google' loading={loading} setLoading={setLoading}/>
                           </div>
 
                         </form>

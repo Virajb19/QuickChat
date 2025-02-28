@@ -14,7 +14,7 @@ enum OauthProvider {
 
 model User {
     id            Int       @id @default(autoincrement())
-    username      String?
+    username      String?   @unique
     email         String?   @unique
     emailVerified DateTime?
     password      String?
@@ -41,7 +41,7 @@ model Chat {
     updatedAt DateTime @updatedAt
 
     title    String
-    passcode String
+    passcode String @unique
 
     ownerId Int
     owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -75,7 +75,7 @@ model Message {
     content String
 
     chatId String
-    Chat   Chat   @relation(fields: [chatId], references: [id])
+    Chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
     senderId Int
     sender   User @relation(fields: [senderId], references: [id])

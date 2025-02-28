@@ -16,8 +16,16 @@ export const DemarcationLine = () => (
     </div>
   )
 
-export function OAuthButton({label, provider}: {label: string, provider: string}) {
-    const [loading,setLoading] = useState(false)
+type Props = {
+  label: string,
+  provider: string,
+  loading: boolean,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export function OAuthButton({label, provider, loading, setLoading}: Props) {
+
+    // const [loading,setLoading] = useState(false)
     
   return (
     <motion.button

@@ -24,7 +24,7 @@ h3 {
 }
 
 .input-style {
-  @apply p-4 mb:p-2 mb:placeholder:text-sm bg-[#474549] dark:bg-black placeholder:font-semibold placeholder:text-xl rounded-sm focus:outline-none border-[2.5px] border-transparent dark:focus:border-blue-600 duration-100
+  @apply px-4 py-2 mb:p-2 mb:placeholder:text-sm dark:bg-black bg-transparent placeholder:font-semibold placeholder:text-lg rounded-sm focus:outline-none border focus:border-transparent focus:ring-[3px] focus:ring-blue-600 duration-100
 }
 
 .button-style {
