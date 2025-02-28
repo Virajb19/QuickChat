@@ -7,24 +7,39 @@ import { SignUpSchema } from '~/lib/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { Loader } from 'lucide-react'
+import { Loader, CircleAlert, CheckCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { DemarcationLine, OAuthButton } from './social-auth'
 import PasswordInput from './PasswordInput'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { api } from '~/trpc/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDebounceCallback } from 'usehooks-ts'
+import { twMerge } from 'tailwind-merge'
 
 type SignUpData = z.infer<typeof SignUpSchema>
 
 export default function SignUp() {
-
+ 
+  const utils = api.useUtils()
   const signup = api.user.signup.useMutation()
 
   const router = useRouter()
 
   const [loading, setLoading] = useState(false)
+
+  const [username, setUsername] = useState('')
+  const debounced = useDebounceCallback(setUsername, 500)
+  const [usernameStatus, setUsernameStatus] = useState<'available' | 'taken' | 'checking' | null>(null)
+
+  const {data: available, isFetching} = api.user.checkUsername.useQuery({username}, { enabled: username.length >= 3 && username.length <= 10})
+
+  useEffect(() => {
+     if(username.length >= 3 && username.length <= 10) {
+       setUsernameStatus(available ? 'available' : 'taken')
+     } else setUsernameStatus(null)
+  }, [available])
 
   const form = useForm<SignUpData>({
     resolver: zodResolver(SignUpSchema),
@@ -66,8 +81,28 @@ export default function SignUp() {
                              <FormItem className='flex flex-col gap-1'>
                               <FormLabel>Username</FormLabel>
                               <FormControl>
-                                <input className='input-style' placeholder='Enter your username' {...field}/>
+                                <input onChange={e => {
+                                  field.onChange(e)
+                                  debounced(e.target.value)
+                                }} className='input-style' placeholder='Enter your username'/>
                               </FormControl>
+                               {username.length >= 3 && username.length <= 10 && (
+                                     <div className={twMerge("flex items-center gap-1 text-sm font-medium", isFetching ? 'text-gray-400' :  usernameStatus === 'available' ? 'text-green-500' : 'text-red-500')}>
+                                     {isFetching ? (
+                                           <>
+                                             <Loader className="animate-spin size-4"/>  Checking...
+                                           </>
+                                         ) : usernameStatus === 'available' ?  (
+                                           <>
+                                             <CheckCheck className="size-4"/> username available
+                                           </>
+                                         ) : (
+                                           <>
+                                             <CircleAlert className="size-4"/> username already taken
+                                           </>
+                                       )}
+                                 </div>
+                               )}
                               <FormMessage />
                              </FormItem>
                           )}
@@ -101,9 +136,9 @@ export default function SignUp() {
                           )}
                         />
 
-                        <motion.button whileHover={form.formState.isSubmitting ? {opacity: 0.5} : {opacity: 0.7}}
+                        <motion.button whileHover={form.formState.isSubmitting && usernameStatus === 'available' ? {opacity: 0.5} : {opacity: 0.7}}
                           className='mx-auto rounded-full font-semibold cursor-pointer flex items-center gap-2 w-full flex-center px-6 py-1 text-lg bg-black text-white dark:bg-white dark:text-black disabled:cursor-not-allowed disabled:opacity-75'
-                          disabled={form.formState.isSubmitting} type='submit'> 
+                          disabled={form.formState.isSubmitting || usernameStatus === 'taken'} type='submit'> 
                          {form.formState.isSubmitting && <Loader className='animate-spin'/>} {form.formState.isSubmitting ? 'Please wait...' : 'Sign up'}
                         </motion.button>
 

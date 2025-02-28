@@ -35,7 +35,7 @@ export const authConfig = {
           signIn: async ({ user, account, profile}) => {
             try {
               if(account?.provider && profile) {
-       
+               // How to check username availablity here ?
                const provider = account.provider === 'github' ? 'GITHUB' : 'GOOGLE'
                 
                 const existingUser = await db.user.findFirst({where: { OR: [{email: user.email!}, {OauthId: user.id}]}, select: {id: true}})
