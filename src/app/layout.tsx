@@ -7,6 +7,7 @@ import NextTopLoader from 'nextjs-toploader';
 
 import { TRPCReactProvider } from "~/trpc/react";
 import Navbar from "~/components/Navbar";
+import { GridBackgroundDemo } from "~/components/GridBG";
 
 export const metadata: Metadata = {
   title: "Quick Chat",
