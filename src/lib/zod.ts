@@ -17,3 +17,9 @@ export const createChatSchema = z.object({
     title: z.string().min(1, { message: 'Provide a title'}),
     passcode: z.string().length(6, { message: 'Passcode should be of 6 letters'})
 })
+
+export const joinChatSchema = z.object({
+    chatId: z.string().cuid({ message: 'Enter a valid ID'}),
+    passcode: z.string().length(6, { message: 'Passcode should be of 6 letters'})
+})
+

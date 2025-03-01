@@ -1,4 +1,4 @@
-import { createChatSchema, SignUpSchema } from '~/lib/zod';
+import { createChatSchema, joinChatSchema, SignUpSchema } from '~/lib/zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod'
@@ -38,11 +38,23 @@ export const userRouter = createTRPCRouter({
   deleteChat: protectedProcedure.input(z.object({chatId: z.string()})).mutation(async ({ctx, input}) => {
       const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true}})
       if(!chat) throw new TRPCError({code: 'NOT_FOUND', message: 'chat not found'})
-    //   await new Promise(r => setTimeout(r, 8000))
       await ctx.db.chat.delete({where: { id: chat.id}})
       return { chatId: chat.id}
   }),
-  joinChat: protectedProcedure.input(z.object({chatId: z.string(), passcode: z.string()})).mutation(async ({ctx, input}) => {
+  joinChat: protectedProcedure.input(joinChatSchema).mutation(async ({ctx, input}) => {
 
+      const userId = parseInt(ctx.session.user.id)
+      const {chatId, passcode} = input
+
+      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true, passcode: true}})
+      if(!chat) throw new TRPCError({code: 'NOT_FOUND', message: 'chat not found'})
+      
+      const exitstingParticipant = await ctx.db.chatParticipant.findFirst({where: {userId, chatId}})
+      if(exitstingParticipant) throw new TRPCError({code: 'CONFLICT', message: 'User already in chat'})
+
+      if(chat.passcode !== passcode) throw new TRPCError({code: 'UNAUTHORIZED', message: 'Incorrect passcode'})
+
+      await ctx.db.chatParticipant.create({data: {chatId, userId}})
+      return { chatId: chat.id , success: true, message: 'Joined chat successfully' }
   })
 })

@@ -40,8 +40,8 @@ export default function ChatMenu({chatId} : {chatId: string}) {
             copy(chatId)
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 2500)
-         }} disabled={isCopied} className='cursor-pointer p-0'>
-             <div className={twMerge('flex items-center gap-3 p-2 rounded-md w-full text-base font-semibold hover:bg-blue-600/40 disabled:cursor-not-allowed', isCopied && 'hover:bg-green-600')}>
+         }} className='cursor-pointer p-0'>
+             <div className={twMerge('flex items-center gap-3 p-2 rounded-md w-full text-base font-semibold hover:bg-blue-600/40', isCopied && 'hover:bg-green-600')}>
                 {isCopied ? (
                   <>
                      <Check /> Copied
