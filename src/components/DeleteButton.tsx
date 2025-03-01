@@ -23,7 +23,7 @@ export default function DeleteButton({chatId, setIsDeleting}: Props) {
     }
   })
 
-  return <button onClick={() => deleteChat.mutate({chatId})} disabled={deleteChat.isPending} className="flex items-center gap-3 p-2 rounded-md hover:bg-red-500/10 hover:text-red-500 duration-300 w-full disabled:cursor-not-allowed">
+  return <button onClick={() => deleteChat.mutate({chatId})} disabled={deleteChat.isPending} className="flex text-base font-semibold items-center gap-3 p-2 rounded-sm hover:bg-red-500/10 hover:text-red-500 duration-300 w-full disabled:cursor-not-allowed">
           <Trash /> Delete
   </button>
 }
