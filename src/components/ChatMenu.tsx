@@ -28,9 +28,7 @@ export default function ChatMenu({chatId} : {chatId: string}) {
            {isDeleting ? (
                <div className="size-5 border-[3px] border-red-400/30 border-t-red-500 rounded-full animate-spin" />           
               ) : (
-                <div className='p-2 rounded-full hover:bg-blue-500/20 duration-300'>
                   <EllipsisVertical />
-                </div>
            )}
        </DropdownMenuTrigger>
        <DropdownMenuContent align='end' className='m-2 min-w-44 z-[99999] rounded-md bg-neutral-100 dark:bg-neutral-900 border-[3px] border-blue-500'>

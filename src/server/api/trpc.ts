@@ -108,7 +108,19 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+
+const errorMiddleware = t.middleware(async ({ next }) => {
+  try {
+    const result = await next()
+    return result
+  } catch(err) {
+     if(err instanceof TRPCError) throw err
+     console.error(err)
+     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong!'})
+  }
+})
+
+export const publicProcedure = t.procedure.use(timingMiddleware).use(errorMiddleware);
 
 /**
  * Protected (authenticated) procedure
@@ -119,7 +131,7 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure
-  .use(timingMiddleware)
+  .use(timingMiddleware).use(errorMiddleware)
   .use(({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user) {
       throw new TRPCError({ code: "UNAUTHORIZED" });

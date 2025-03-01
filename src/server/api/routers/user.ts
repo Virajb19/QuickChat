@@ -46,8 +46,10 @@ export const userRouter = createTRPCRouter({
       const userId = parseInt(ctx.session.user.id)
       const {chatId, passcode} = input
 
-      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true, passcode: true}})
+      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true, passcode: true, ownerId: true}})
       if(!chat) throw new TRPCError({code: 'NOT_FOUND', message: 'chat not found'})
+
+      if(chat.ownerId === userId) throw new TRPCError({code: 'BAD_REQUEST', message: 'You are already the owner of this chat'})
       
       const exitstingParticipant = await ctx.db.chatParticipant.findFirst({where: {userId, chatId}})
       if(exitstingParticipant) throw new TRPCError({code: 'CONFLICT', message: 'User already in chat'})
