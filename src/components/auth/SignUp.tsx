@@ -33,10 +33,10 @@ export default function SignUp() {
   const debounced = useDebounceCallback(setUsername, 500)
   const [usernameStatus, setUsernameStatus] = useState<'available' | 'taken' | 'checking' | null>(null)
 
-  const {data: available, isFetching} = api.user.checkUsername.useQuery({username}, { enabled: username.length >= 3 && username.length <= 10})
+  const {data: available, isFetching} = api.user.checkUsername.useQuery({username}, { enabled: username.length >= 3 && username.length <= 25})
 
   useEffect(() => {
-     if(username.length >= 3 && username.length <= 10) {
+     if(username.length >= 3 && username.length <= 25) {
        setUsernameStatus(available ? 'available' : 'taken')
      } else setUsernameStatus(null)
   }, [available])
@@ -49,6 +49,7 @@ export default function SignUp() {
   async function onSubmit(data: SignUpData) {
     await signup.mutateAsync(data, {
         onSuccess: () => {
+            form.reset()
             toast.success('Signed up')
             router.push('/signin')
         },

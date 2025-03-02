@@ -1,4 +1,4 @@
-import { createChatSchema, joinChatSchema, SignUpSchema } from '~/lib/zod';
+import { createChatSchema, createMessageSchema, joinChatSchema, SignUpSchema } from '~/lib/zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod'
@@ -10,7 +10,7 @@ export const userRouter = createTRPCRouter({
         const { username, email, password} = input
 
         const userExists = await ctx.db.user.findUnique({ where: { email }, select: { id: true}})
-        if(userExists) throw new TRPCError({ code: 'FORBIDDEN', message: 'user already exists'})
+        if(userExists) throw new TRPCError({ code: 'FORBIDDEN', message: 'user already exists. Check your email'})
 
         const hashedPassword = await bcrypt.hash(password,10)
         await ctx.db.user.create({data: {username,email,password: hashedPassword}})
@@ -58,5 +58,8 @@ export const userRouter = createTRPCRouter({
 
       await ctx.db.chatParticipant.create({data: {chatId, userId}})
       return { chatId: chat.id , success: true, message: 'Joined chat successfully' }
-  })
+  }),
+  createMessage: protectedProcedure.input(createMessageSchema.extend({chatId: z.string().cuid()})).mutation(async ({ctx,input}) => {
+      const message = await ctx.db.message.create({data: {content: input.content, senderId: parseInt(ctx.session.user.id), chatId: input.chatId}})
+  }) 
 })

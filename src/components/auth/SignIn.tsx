@@ -32,11 +32,15 @@ export default function SignIn() {
 
   async function onSubmit(data: SignInData) {
     
+    setLoading(true)
     const res = await signIn('credentials',{...data, redirect: false})
     if(res?.error) {
+       setLoading(false)
        const error = ['User not found. Please check your email !', 'Incorrect password. Try again !!!'].includes(res?.error ?? '') ? res?.error : 'Invalid credentials!!!'
        return toast.error(error)
     }
+    setLoading(false)
+    form.reset()
     router.push('/')
     router.refresh()
     toast.success('Login successfull!. Welcome back!')

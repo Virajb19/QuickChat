@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle,DialogDescription } from "~/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'

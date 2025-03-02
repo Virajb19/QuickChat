@@ -4,6 +4,7 @@ import { ArrowRight, Plus } from 'lucide-react'
 import { db } from "~/server/db";
 import { auth } from "~/server/auth";
 import CreateChatButton from "~/components/CreateChatButton";
+import JoinButton from "~/components/JoinButton";
 
 export default async function HomePage() {
 
@@ -19,8 +20,9 @@ export default async function HomePage() {
               conversations in seconds.</p>
              {isAuth ? (
                   <div className="flex items-center gap-2">
-                    {chatCount > 0 && <Link href={'/chats'} className="font-bold flex items-center gap-2 bg-blue-700 group rounded-lg px-3 py-2">Go to Chats<ArrowRight className="group-hover:translate-x-1 duration-300"/></Link>}
-                    {/* <Link href={'/create'} className="font-bold bg-black text-white dark:bg-white dark:text-black px-3 py-2 rounded-lg flex items-center gap-2 group"><Plus className="group-hover:scale-110 duration-200"/>Create a chat</Link> */}
+                    {chatCount > 0 ? <Link href={'/chats'} className="font-bold flex items-center gap-2 bg-blue-700 group rounded-lg px-3 py-2">Go to Chats<ArrowRight className="group-hover:translate-x-1 duration-300"/></Link> : (
+                      <JoinButton />
+                    )}
                     <CreateChatButton />
                </div>
              ) : (

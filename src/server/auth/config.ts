@@ -36,6 +36,7 @@ export const authConfig = {
             try {
               if(account?.provider && profile) {
                // How to check username availablity here ?
+              //  console.log(user)
                const provider = account.provider === 'github' ? 'GITHUB' : 'GOOGLE'
                 
                 const existingUser = await db.user.findFirst({where: { OR: [{email: user.email!}, {OauthId: user.id}]}, select: {id: true}})
@@ -61,6 +62,8 @@ export const authConfig = {
             } catch(e) {
              console.log(e)
              return false
+            // throw new Error("SIGN_IN_FAILED")
+            // return '/error'
             }
          },     
     },
@@ -115,7 +118,8 @@ export const authConfig = {
         maxAge:2 * 24 * 60 * 60
     },
     pages: {
-        signIn: '/signin'
+        signIn: '/signin',
+        // error: '/error'
     },
     secret: process.env.AUTH_SECRET || 'secret'
  

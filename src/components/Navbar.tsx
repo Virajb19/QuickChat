@@ -6,8 +6,12 @@ import { useSession } from 'next-auth/react';
 import { ThemeToggle } from './ThemeToggle';
 import UserAccountNav from './UserAccountNav';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
+
+    const pathname = usePathname()
+    if(pathname.includes('/error')) return null
 
     const { data: session, status } = useSession()
     const isAuth = !!session 
