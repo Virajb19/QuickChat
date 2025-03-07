@@ -55,6 +55,7 @@ export default function CreateChatButton() {
 
     async function onSubmit(data: Input) {
       await createChat.mutateAsync(data)
+      
     }
 
     form.watch()

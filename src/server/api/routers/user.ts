@@ -61,5 +61,33 @@ export const userRouter = createTRPCRouter({
   }),
   createMessage: protectedProcedure.input(createMessageSchema.extend({chatId: z.string().cuid()})).mutation(async ({ctx,input}) => {
       const message = await ctx.db.message.create({data: {content: input.content, senderId: parseInt(ctx.session.user.id), chatId: input.chatId}})
-  }) 
+      return { messageId: message.id}
+  }),
+  deleteMessage: protectedProcedure.input(z.object({messageId: z.string().cuid()})).mutation(async ({ctx,input}) => {
+       const userId = parseInt(ctx.session.user.id)
+
+       const message = await ctx.db.message.findUnique({where: {id: input.messageId}, select: {id: true, senderId: true}})
+       if(!message) throw new TRPCError({code: 'NOT_FOUND', message: 'message not found'})
+
+       if(message.senderId !== userId) throw new TRPCError({code: 'FORBIDDEN', message: 'Unauthorized'})
+
+       await ctx.db.message.delete({where: {id: message.id}})
+
+       return { success: true}
+  }),
+  editMessage: protectedProcedure.input(z.object({messageId: z.string().cuid(), newContent: z.string().max(10000)})).mutation(async ({ctx,input}) => {
+    const userId = parseInt(ctx.session.user.id)
+
+    const message = await ctx.db.message.findUnique({where: {id: input.messageId}, select: {id: true, senderId: true}})
+    if(!message) throw new TRPCError({code: 'NOT_FOUND', message: 'message not found'})
+
+    if(message.senderId !== userId) throw new TRPCError({code: 'FORBIDDEN', message: 'Unauthorized'})
+
+    await ctx.db.message.update({where: {id: message.id}, data: {content: input.newContent}})
+
+    return { success: true}
+  }),
+  getJoinedChats: protectedProcedure.query(async ({ctx}) => {
+    return await ctx.db.chatParticipant.findMany({where: {userId: parseInt(ctx.session.user.id)}, include: {Chat: {select: {messages: true}}}})
+  }),
 })

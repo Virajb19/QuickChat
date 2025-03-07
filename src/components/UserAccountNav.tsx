@@ -7,7 +7,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "~/components/ui/dropdown-menu"
-import { LogOut, Home } from 'lucide-react';
+import { LogOut, Home, User } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import UserAvatar from './UserAvatar';
 import Link from "next/link";
@@ -28,6 +28,14 @@ export default function UserAccountNav() {
                             {user?.name && <p className='text-lg'>{user.name}</p>}
                             {user?.email && <p className='text-sm text-zinc-500 truncate'>{user.email}</p>}
                         </div>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem>
+                    <Link href={'/profile'} className="flex items-center gap-2 text-base font-bold transition-all duration-300 hover:text-blue-500">
+                            <User className="size-4" strokeWidth={3}/> Profile
+                         </Link>
                     </DropdownMenuItem>
 
                     <DropdownMenuSeparator />

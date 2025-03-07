@@ -6,7 +6,7 @@ export const chatRouter = createTRPCRouter({
     getParticipants: protectedProcedure.input(z.object({chatId: z.string().cuid()})).query(async ({ctx,input}) => {
         const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true}})
         if(!chat) throw new TRPCError({code: 'NOT_FOUND', message: 'chat not found'})
-        return await ctx.db.chatParticipant.findMany({where: {chatId: input.chatId}})
+        return await ctx.db.chatParticipant.findMany({where: {chatId: input.chatId, leftAt: null}})
     }),
     getMessages: protectedProcedure.input(z.object({chatId: z.string().cuid()})).query(async ({ctx,input}) => {
         const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true}})

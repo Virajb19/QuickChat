@@ -51,7 +51,7 @@ export default function MessageInput({chatId}: {chatId: string}) {
         return () => document.removeEventListener('keydown', handleKeyDown)
       }, [])
 
-  return <div className="p-1">
+  return <div className="p-1 border-t">
         <Form {...form}>
             <form className='flex items-center gap-2 p-2' onSubmit={form.handleSubmit(onSubmit)}>
             <FormField

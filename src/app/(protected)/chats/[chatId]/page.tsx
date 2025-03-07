@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation"
 import ChatSideBar from "~/components/ChatSideBar"
-import MessageInput from "~/components/MessageInput"
-import MessageList from "~/components/MessageList"
+import MessageInput from "~/components/message/MessageInput"
+import MessageList from "~/components/message/MessageList"
 import { auth } from "~/server/auth"
 import { db } from "~/server/db"
 
