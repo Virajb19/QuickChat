@@ -1,10 +1,12 @@
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
+import { useChat } from "~/hooks/useChat";
 import { api } from "~/trpc/react";
 
 export default function DeleteButton({messageId,chatId}: {messageId: string,chatId: string}) {
 
   const utils = api.useUtils()
+  const { socket } = useChat(chatId)
 
   const deleteMessage = api.user.deleteMessage.useMutation({
     onMutate: async () => {
@@ -17,7 +19,10 @@ export default function DeleteButton({messageId,chatId}: {messageId: string,chat
 
         return prevMessages
     },
-    onSuccess: () => toast.success('Deleted'),
+    onSuccess: () => {
+      toast.success('Deleted')
+      socket.emit('delete:message', messageId)
+    },
     onError: (err, {messageId}, prevMessages) => {
        console.error(err)
        toast.error(err.message)

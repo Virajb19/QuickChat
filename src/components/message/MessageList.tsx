@@ -1,12 +1,11 @@
 'use client'
 
 import { Loader2, MessageSquare  } from "lucide-react"
-import { useSession } from "next-auth/react"
-import Image from "next/image"
 import { twMerge } from "tailwind-merge"
 import { api } from "~/trpc/react"
 import { motion } from 'framer-motion'
 import { useEffect } from 'react'
+import { formatDistanceToNow} from 'date-fns'
 import MessageMenu from "./MessageMenu"
 
 export default function MessageList({chatId, userId}: {chatId: string, userId: number}) {
@@ -15,6 +14,7 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
   // const {data: session, status} = useSession()
   // const userId = parseInt(session?.user.id)
 
+  // make refetchInterval small for fast refetch
   const {data: messages, isLoading, isError, isRefetching, isFetching} = api.chat.getMessages.useQuery({chatId}, { refetchInterval: 3 * 60 * 1000})
 
   useEffect(() => {
@@ -30,6 +30,10 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
   // Try using isFetching or isRefetching
   if(isLoading || !messages) return <div className="flex-center grow">
       <Loader2 className="size-12 text-blue-600 animate-spin"/>
+  </div>
+
+  if(isError) return <div className="flex-center grow">
+       <h3 className="text-lg font-bold text-red-600">Error fetching messages!</h3>
   </div>
 
   // use || true to check
@@ -51,10 +55,15 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
 
               return <div key={message.id} className={twMerge("flex items-start p-2 gap-3", isUserMessage && 'flex-row-reverse')}>
                   <MessageMenu chatId={chatId} messageId={message.id} image={image} name={name} isUserMessage={isUserMessage} content={message.content}/>
-                    <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.4, type: 'spring', bounce: 0.4}}
-                      className="max-w-1/2 break-words font-semibold text-left p-2 rounded-md bg-blue-600/20">
-                         {message.content}
-                    </motion.p>
+                   <div className="flex flex-col items-start gap-1">
+                      <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.4, type: 'spring', bounce: 0.4}}
+                          className="max-w-1/2 break-words font-semibold text-left p-2 rounded-md bg-blue-600/20">
+                            {message.content.split('\n').map(line => {
+                              return <p className="whitespace-pre-line">{line}</p>
+                            })}
+                        </motion.p>
+                        <span className="font-semibold text-xs">{formatDistanceToNow(new Date(message.createdAt), {addSuffix: true}).replace('about', '')}</span>
+                   </div>
               </div>
           })}
         </> 

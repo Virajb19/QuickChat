@@ -5,7 +5,7 @@ import { z } from 'zod'
 import bcrypt from 'bcrypt'
 
 export const userRouter = createTRPCRouter({
-    signup: publicProcedure.input(SignUpSchema).mutation(async ({ ctx, input}) => {
+  signup: publicProcedure.input(SignUpSchema).mutation(async ({ ctx, input}) => {
 
         const { username, email, password} = input
 
@@ -59,9 +59,25 @@ export const userRouter = createTRPCRouter({
       await ctx.db.chatParticipant.create({data: {chatId, userId}})
       return { chatId: chat.id , success: true, message: 'Joined chat successfully' }
   }),
+  leaveChat: protectedProcedure.input(z.object({chatId: z.string().cuid()})).mutation(async ({ctx,input}) => {
+      const userId = parseInt(ctx.session.user.id)
+
+      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true, passcode: true, ownerId: true}})
+      if(!chat) throw new TRPCError({code: 'NOT_FOUND', message: 'chat not found'})
+
+      if(chat.ownerId === userId) throw new TRPCError({code: 'BAD_REQUEST', message: 'You cannot leave a chat that you own'})
+
+      const participant = await ctx.db.chatParticipant.findUnique({where: {userId_chatId: {userId, chatId: chat.id}}, select: {id: true}})
+      if(!participant) throw new TRPCError({ code: "NOT_FOUND", message: "You are not a participant in this chat" })
+
+      await ctx.db.chatParticipant.update({where: {id: participant.id}, data: {leftAt: new Date()}})
+      // await ctx.db.chatParticipant.delete({where: {id: participant.id}})
+
+      return {chatId: chat.id, success: true, message: "Left chat successfully"}
+
+  }),
   createMessage: protectedProcedure.input(createMessageSchema.extend({chatId: z.string().cuid()})).mutation(async ({ctx,input}) => {
-      const message = await ctx.db.message.create({data: {content: input.content, senderId: parseInt(ctx.session.user.id), chatId: input.chatId}})
-      return { messageId: message.id}
+      return await ctx.db.message.create({data: {content: input.content, senderId: parseInt(ctx.session.user.id), chatId: input.chatId}, include: {sender: {select: {username: true, ProfilePicture: true}}}})
   }),
   deleteMessage: protectedProcedure.input(z.object({messageId: z.string().cuid()})).mutation(async ({ctx,input}) => {
        const userId = parseInt(ctx.session.user.id)

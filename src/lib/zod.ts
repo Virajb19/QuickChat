@@ -28,6 +28,6 @@ export const createMessageSchema = z.object({
 })
 
 export const editMessageSchema = z.object({
-    newContent: z.string().max(10000)
+    newContent: z.string().min(1, {message: 'Enter a message'}).max(10000)
 })
 

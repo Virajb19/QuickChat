@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import DeleteButton from "./DeleteButton";
 import { Message, User } from "@prisma/client";
 import EditButton from "./EditButton";
+import { twMerge } from "tailwind-merge";
 
 const colors = ['red', 'blue', 'green', 'orange', 'purple']
 const randomColor = colors[Math.floor(Math.random() * colors.length)]
@@ -21,8 +22,8 @@ type Props = {
 
 export default function MessageMenu({image,name,isUserMessage,chatId,messageId, content}: Props) {
   return <DropdownMenu modal={false}>
-        <DropdownMenuTrigger disabled={!isUserMessage}>
-               <div className="shrink-0 min-w-fit">
+        <DropdownMenuTrigger disabled={!isUserMessage} asChild>
+               <div className={twMerge("shrink-0 min-w-fit", isUserMessage && 'cursor-pointer')}>
                 {image ? (
                         <Image src={image} alt="user" width={40} height={40} className="rounded-full"/>
                       ) : (
@@ -39,7 +40,7 @@ export default function MessageMenu({image,name,isUserMessage,chatId,messageId, 
 
              <DropdownMenuSeparator />
 
-             <DropdownMenuItem onClick={e => e.preventDefault()} className="p-0">
+             <DropdownMenuItem onSelect={e => e.preventDefault()} className="p-0">
                  <EditButton chatId={chatId} messageId={messageId} prevContent={content}/>
              </DropdownMenuItem>
         </DropdownMenuContent>

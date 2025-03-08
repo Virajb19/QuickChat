@@ -5,18 +5,25 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormMessage} from '~/components/ui/form'
 import { createMessageSchema } from '~/lib/zod'
-import { SendHorizonal } from 'lucide-react'
+import { Loader, SendHorizonal } from 'lucide-react'
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { api } from '~/trpc/react'
 import { toast } from 'sonner'
+import { useChat } from '~/hooks/useChat'
  
 type Input = z.infer<typeof createMessageSchema>
 
-export default function MessageInput({chatId}: {chatId: string}) {
+export default function MessageInput({chatId, userId}: {chatId: string, userId: number}) {
+
+    // const { socket, initSocket} = useSocketStore()
+    const { socket } = useChat(chatId)
 
     const utils = api.useUtils()
     const createMessage = api.user.createMessage.useMutation({
+        onSuccess: (message) => {
+           socket.emit('send:message', message)
+        },
         onError: (err) => {
             console.error(err)
             toast.error('Something went wrong')
@@ -33,7 +40,12 @@ export default function MessageInput({chatId}: {chatId: string}) {
     })
 
     async function onSubmit(data: Input) {
+        if(data.content.length > 10000) {
+            toast.error('Message is too long. Please keep it under 10,000 characters.', {position: 'bottom-right'})
+            return
+        }
         await createMessage.mutateAsync({...data,chatId})
+        // socket.emit('message', data.content)
         // form.reset()
     }
 
@@ -50,6 +62,10 @@ export default function MessageInput({chatId}: {chatId: string}) {
    
         return () => document.removeEventListener('keydown', handleKeyDown)
       }, [])
+
+    //   useEffect(() => {
+    //       initSocket()
+    //   }, [initSocket])
 
   return <div className="p-1 border-t">
         <Form {...form}>
@@ -68,7 +84,11 @@ export default function MessageInput({chatId}: {chatId: string}) {
               />
 
               <motion.button whileTap={{scale: 0.9}} id='submit' disabled={form.formState.isSubmitting} type='submit' className='p-2 group flex-center rounded-xl bg-blue-600'>
+                {form.formState.isSubmitting ? (
+                    <Loader className='animate-spin'/>
+                ) : (
                    <SendHorizonal className='group-hover:translate-x-1 duration-200'/>
+                )}
               </motion.button>
             </form>
         </Form>
