@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { toast } from 'sonner'
 import { api } from '~/trpc/react'
+import { useRouter } from 'nextjs-toploader/app'
 
 type message = Message & { sender: Pick<User, "ProfilePicture" | "username">}
 
@@ -20,6 +21,10 @@ let socket: Socket | null = null
 export const useChat = (chatId: string) => {
     const utils = api.useUtils()
     const socket = getSocket()
+
+    const router = useRouter()
+
+   //  const {data: session, status} = useSession()
 
     useEffect(() => {
        if(!socket.connected) {
@@ -40,14 +45,38 @@ export const useChat = (chatId: string) => {
           utils.chat.getMessages.setData({chatId}, (messages) => (messages?.filter(msg => msg.id !== messageId)))
        }
 
-       socket.on('send:message', sendMessage)   
-       socket.on('delete:message', deleteMessage)
+       const editMessage = ({messageId, newContent}: {messageId: string, newContent: string}) => {
+           utils.chat.getMessages.setData({chatId}, (messages) => (
+             messages?.map(msg => msg.id === messageId ? {...msg, content: newContent} : msg)
+           ))
+       }
+
+       const leaveChat = (name: string) => {
+         toast.success(`${name} left the chat`, { position: 'bottom-right', duration: 5000})
+         router.refresh()
+       }
+
+       const joinChat = (name: string) => {
+         toast.success(`${name} joined the chat`, { position: 'bottom-right', duration: 5000})
+         router.refresh()
+       }
+
+       socket.once('send:message', sendMessage)   
+       socket.once('delete:message', deleteMessage)
+       socket.once('edit:message', editMessage)
+       socket.once('join:chat', joinChat)
+       socket.once('leave:chat', leaveChat)
+
+      //  socket.off()
 
        return () => {
          if(socket) {
-            // socket.disconnect()
+            socket.disconnect()
             socket.off('send:message', sendMessage)
             socket.off('delete:message', deleteMessage)
+            socket.off('edit:message', editMessage)
+            socket.off('join:chat', joinChat)
+            socket.off('leave:chat', leaveChat)
          }
        }
 

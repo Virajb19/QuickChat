@@ -11,6 +11,8 @@ import { z } from "zod";
 import { api } from "~/trpc/react";
 import {useRouter} from 'nextjs-toploader/app'
 import { toast } from "sonner";
+import { useChat } from "~/hooks/useChat";
+import { useSession } from "next-auth/react";
 
 type Input = z.infer<typeof joinChatSchema>
 
@@ -18,6 +20,8 @@ export default function JoinButton() {
 
   const router = useRouter()
   const [open, setOpen] = useState(false)
+
+  const {data: session, status} = useSession()
   
   const utils = api.useUtils()
 
@@ -25,6 +29,9 @@ export default function JoinButton() {
     onSuccess: ({chatId}) => {
         setOpen(false)
         router.push(`/chats/${chatId}`)
+        router.refresh()
+        toast.success('Joined')
+        socket.emit('join:chat', session?.user.name)
      },
      onError: (err) => {
        console.error(err)
@@ -39,6 +46,8 @@ export default function JoinButton() {
     resolver: zodResolver(joinChatSchema),
     defaultValues: { chatId: '', passcode: ''}
 })
+
+ const { socket } = useChat(form.getValues('chatId'))
 
 async function onSubmit(data: Input) {
     await joinChat.mutateAsync(data)

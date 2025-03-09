@@ -9,19 +9,18 @@ import { z } from "zod";
 import { editMessageSchema } from "~/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { twMerge } from "tailwind-merge";
+import { useChat } from "~/hooks/useChat";
 
 type Input = z.infer<typeof editMessageSchema>
 
 export default function EditButton({messageId, chatId, prevContent}: {messageId: string, chatId: string, prevContent: string}) {
 
+   const { socket } = useChat(chatId)
+
     const [open, setOpen] = useState(false)
     const utils = api.useUtils()
 
   const editMessage = api.user.editMessage.useMutation({
-     onSuccess: () => {
-        setOpen(false)
-        toast.success('Edited')
-     },
      onError: (err) => {
         console.error(err)
         toast.error(err.message)
@@ -37,7 +36,13 @@ export default function EditButton({messageId, chatId, prevContent}: {messageId:
   })
 
   async function onSubmit(data: Input) {
-    await editMessage.mutateAsync({...data,messageId})
+    await editMessage.mutateAsync({...data,messageId}, {
+      onSuccess: () => {
+         setOpen(false)
+         toast.success('Edited')
+         socket.emit('edit:message', {messageId, newContent: data.newContent})
+      },
+    })
   }
 
   return <Dialog open={open} onOpenChange={state => setOpen(state)}>

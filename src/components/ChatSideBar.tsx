@@ -7,6 +7,8 @@ import { api } from "~/trpc/react";
 import { useRouter } from 'nextjs-toploader/app'
 import { toast } from "sonner";
 import Link from "next/link";
+import { useChat } from "~/hooks/useChat";
+import { useSession } from "next-auth/react";
 
 type Props = {
     userId: number
@@ -21,15 +23,20 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
 
   // const chatId = useMemo(() => participants[0]?.chatId, [participants])
 
-  // const {data: session, status} = useSession()
+  const {data: session, status} = useSession()
   // const userId = session?.user.id
 
+  const { socket } = useChat(chat.id)
+
   const router = useRouter()
+
+  // const {data: chatParticipants, isLoading, isError} = api.chat.getParticipants.useQuery({chatId: chat.id}, {refetchInterval: 5 * 60 * 1000})
 
   const leaveChat = api.user.leaveChat.useMutation({
     onSuccess: () => {
        router.push('/')
        toast.success(`Left the chat ${chat.title}`)
+       socket.emit('leave:chat', session?.user.name ?? '')
     },
     onError: (err) => {
        console.error(err) 
@@ -66,11 +73,11 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
               {/* <div className="bg-red-400 w-10 h-screen shrink-0"/> */}
         </div>
          {chat.ownerId === userId ? (
-           <Link href={'/chats'} className="flex-center gap-2 bg-blue-700 hover:bg-blue-600 group font-semibold py-2 rounded-lg mx-2">
+           <Link href={'/chats'} className="flex-center gap-2 mt-1 bg-blue-700 hover:bg-blue-600 group font-semibold py-2 rounded-lg mx-2">
                <ArrowLeft className="group-hover:-translate-x-1 duration-200"/> Go to chats
            </Link>
          ) : (
-          <button onClick={() => leaveChat.mutate({chatId: chat.id})} disabled={leaveChat.isPending} className="flex-center gap-2 bg-red-700 hover:bg-red-600 tracking-wide hover:gap-4 text-lg font-semibold duration-200  rounded-lg mx-2 py-2 disabled:cursor-not-allowed disabled:opacity-70">
+          <button onClick={() => leaveChat.mutate({chatId: chat.id})} disabled={leaveChat.isPending} className="flex-center my-1 gap-2 bg-red-700 hover:bg-red-600 tracking-wide hover:gap-4 text-lg font-semibold duration-200 border rounded-md mx-2 py-1 disabled:cursor-not-allowed disabled:opacity-70">
               {leaveChat.isPending ? (
                 <>
                     <div className='size-5 border-[3px] border-white/50 border-t-white rounded-full animate-spin'/> Leaving...

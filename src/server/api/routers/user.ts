@@ -70,8 +70,8 @@ export const userRouter = createTRPCRouter({
       const participant = await ctx.db.chatParticipant.findUnique({where: {userId_chatId: {userId, chatId: chat.id}}, select: {id: true}})
       if(!participant) throw new TRPCError({ code: "NOT_FOUND", message: "You are not a participant in this chat" })
 
-      await ctx.db.chatParticipant.update({where: {id: participant.id}, data: {leftAt: new Date()}})
-      // await ctx.db.chatParticipant.delete({where: {id: participant.id}})
+      // await ctx.db.chatParticipant.update({where: {id: participant.id}, data: {leftAt: new Date()}})
+      await ctx.db.chatParticipant.delete({where: {id: participant.id}})
 
       return {chatId: chat.id, success: true, message: "Left chat successfully"}
 

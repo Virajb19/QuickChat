@@ -59,7 +59,7 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
                       <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.4, type: 'spring', bounce: 0.4}}
                           className="max-w-1/2 break-words font-semibold text-left p-2 rounded-md bg-blue-600/20">
                             {message.content.split('\n').map(line => {
-                              return <p key={i} className="whitespace-pre-line">{line}</p>
+                              return <p className="whitespace-pre-line">{line}</p>
                             })}
                         </motion.p>
                         <span className="font-semibold text-xs">{formatDistanceToNow(new Date(message.createdAt), {addSuffix: true}).replace('about', '')}</span>
