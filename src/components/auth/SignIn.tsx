@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
 import { useState } from 'react'
+import { api } from '~/trpc/react'
 
 type SignInData = z.infer<typeof SignInSchema>
 
@@ -24,6 +25,13 @@ export default function SignIn() {
 
   // shared loading state for OAuth buttons
   const [loading,setLoading] = useState(false)
+
+  const updateStatus = api.user.updateStatus.useMutation({
+    onError: (err) => {
+       console.error(err)
+       toast.error(err.message)
+    }
+  })
 
   const form = useForm<SignInData>({
     resolver: zodResolver(SignInSchema),
@@ -44,6 +52,7 @@ export default function SignIn() {
     router.push('/')
     router.refresh()
     toast.success('Login successfull!. Welcome back!')
+    updateStatus.mutate({status: true})
   }
 
   return <div className="w-full min-h-screen flex-center text-lg">

@@ -58,6 +58,8 @@ model ChatParticipant {
     joinedAt DateTime  @default(now())
     leftAt   DateTime?
 
+    isOnline Boolean @default(true)
+
     userId Int
     user   User @relation(fields: [userId], references: [id])
 

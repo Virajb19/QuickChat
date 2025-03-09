@@ -26,7 +26,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${grotesk.className} antialiased`} suppressHydrationWarning={true}>
-      <body>
+      <body suppressHydrationWarning={true}>
         <Providers>
            <Navbar />
            <NextTopLoader height={4} color="#38bdf8" showSpinner={false} easing="ease"/>

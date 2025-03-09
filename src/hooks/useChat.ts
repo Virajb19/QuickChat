@@ -16,6 +16,7 @@ let socket: Socket | null = null
 }
 
 // Try using ZUSTAND STORE to prevent duplicate listeners
+// use it just for socket along with useChat hook
 export const useChat = (chatId: string) => {
     const utils = api.useUtils()
     const socket = getSocket()

@@ -60,11 +60,7 @@ export const useSocketStore = create<SocketState>((set,get) => ({
             socket.on('disconnect', () => {
                 console.log('Socket disconnected');
                 set({ connected: false, currentRoom: null });
-              });
-
-            socket.on('message', (chatId: string) => {
-                
-            })
+              })
 
             set({socket})
         } catch(err) {

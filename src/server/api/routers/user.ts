@@ -106,4 +106,11 @@ export const userRouter = createTRPCRouter({
   getJoinedChats: protectedProcedure.query(async ({ctx}) => {
     return await ctx.db.chatParticipant.findMany({where: {userId: parseInt(ctx.session.user.id)}, include: {Chat: {select: {messages: true}}}})
   }),
+  updateStatus: protectedProcedure.input(z.object({status: z.boolean()})).mutation(async ({ctx, input}) => {
+      const userId = parseInt(ctx.session.user.id)
+
+      await ctx.db.chatParticipant.updateMany({where: {userId}, data: {isOnline: input.status}})
+
+      return { success: true }
+  })
 })

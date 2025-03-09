@@ -7,6 +7,7 @@ import { FaGithub} from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { api } from '~/trpc/react';
 
 export const DemarcationLine = () => (
     <div className="flex items-center my-4">
@@ -26,6 +27,14 @@ type Props = {
 export function OAuthButton({label, provider, loading, setLoading}: Props) {
 
     // const [loading,setLoading] = useState(false)
+
+    const updateStatus = api.user.updateStatus.useMutation({
+      onError: (err) => {
+         console.error(err)
+         toast.error(err.message)
+      }
+    })
+  
     
   return (
     <motion.button
