@@ -42,7 +42,7 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
        {/* <div className="flex flex-col flex-1 gap-2 overflow-auto"> */}
        {messages.length === 0 ? (
            <div className="flex flex-col items-center self-center my-auto w-fit">
-              <span className="rounded-md p-3 bg-blue-600/20"><MessageSquare /></span>
+              <span className="rounded-md p-3 bg-blue-600/20 animate-bounce"><MessageSquare /></span>
               <h3 className="font-semibold">Start messaging!</h3>
            </div>
        ) : (
@@ -56,7 +56,7 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
               return <div key={message.id} className={twMerge("flex items-start p-2 gap-3", isUserMessage && 'flex-row-reverse')}>
                   <MessageMenu chatId={chatId} messageId={message.id} image={image} name={name} isUserMessage={isUserMessage} content={message.content}/>
                    <div className="flex flex-col items-start gap-1">
-                      <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.4, type: 'spring', bounce: 0.4}}
+                      <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.4, type: 'spring', bounce: 0.7}}
                           className="max-w-1/2 break-words font-semibold text-left p-2 rounded-md bg-blue-600/20">
                             {message.content.split('\n').map(line => {
                               return <p className="whitespace-pre-line">{line}</p>

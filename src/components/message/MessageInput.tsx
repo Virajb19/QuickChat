@@ -10,14 +10,14 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { api } from '~/trpc/react'
 import { toast } from 'sonner'
-import { useChat } from '~/hooks/useChat'
+import { useSocket } from '~/hooks/useSocket'
  
 type Input = z.infer<typeof createMessageSchema>
 
 export default function MessageInput({chatId, userId}: {chatId: string, userId: number}) {
 
     // const { socket, initSocket} = useSocketStore()
-    const { socket } = useChat(chatId)
+    const socket = useSocket(chatId)
 
     const utils = api.useUtils()
     const createMessage = api.user.createMessage.useMutation({

@@ -1,12 +1,12 @@
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
-import { useChat } from "~/hooks/useChat";
+import { useSocket } from "~/hooks/useSocket";
 import { api } from "~/trpc/react";
 
 export default function DeleteButton({messageId,chatId}: {messageId: string,chatId: string}) {
 
   const utils = api.useUtils()
-  const { socket } = useChat(chatId)
+  const socket = useSocket(chatId)
 
   const deleteMessage = api.user.deleteMessage.useMutation({
     onMutate: async () => {

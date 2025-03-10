@@ -18,7 +18,8 @@ let socket: Socket | null = null
 
 // Try using ZUSTAND STORE to prevent duplicate listeners
 // use it just for socket along with useChat hook
-export const useChat = (chatId: string) => {
+
+export const useSocket = (chatId: string) => {
     const utils = api.useUtils()
     const socket = getSocket()
 
@@ -56,75 +57,38 @@ export const useChat = (chatId: string) => {
          router.refresh()
        }
 
+       // multiple toasts appearing means there are more than one event listeners or duplicate listeners
        const joinChat = (name: string) => {
          toast.success(`${name} joined the chat`, { position: 'bottom-right', duration: 5000})
          router.refresh()
        }
 
-       socket.once('send:message', sendMessage)   
-       socket.once('delete:message', deleteMessage)
-       socket.once('edit:message', editMessage)
-       socket.once('join:chat', joinChat)
-       socket.once('leave:chat', leaveChat)
+       const deleteChat = (name: string) => {
+          router.push('/')
+          toast.success(`${name} deleted the chat`)
+       }
 
+       socket.off('send:message').on('send:message', sendMessage)
+       socket.off('delete:message').on('delete:message', deleteMessage)
+       socket.off('edit:message').on('edit:message', editMessage)
+       socket.off('join:chat').on('join:chat', joinChat)
+       socket.off('leave:chat').on('leave:chat', leaveChat)
+       socket.off('delete:chat').on('delete:chat',deleteChat)
       //  socket.off()
 
        return () => {
          if(socket) {
-            socket.disconnect()
+            // socket.disconnect()
             socket.off('send:message', sendMessage)
             socket.off('delete:message', deleteMessage)
             socket.off('edit:message', editMessage)
             socket.off('join:chat', joinChat)
             socket.off('leave:chat', leaveChat)
+            socket.off('delete:chat', deleteChat)
          }
        }
 
     }, [chatId])
 
-    return { socket }
+    return socket
 }
-
-// CONTEXT API
-// type useSocketType = {
-//    socket: Socket | null
-// }
-
-// const SocketContext = createContext<useSocketType | undefined>(undefined)
-
-// export const socketProvider = ({children}: {children: ReactNode}) => {
-//    const utils = api.useUtils()
-//    const [socket, setSocket] = useState<Socket | null>(null)
-
-//        useEffect(() => {
-//        if(!socket || !socket.connected) {
-//          const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL, {reconnectionAttempts: 10})
-//          newSocket.on('connect', () => {
-//             console.log('connected')
-//          })
-   
-//          newSocket.on('disconnect', () => {
-//              console.log('Socket disconnected');
-//            });
-   
-//          newSocket.on('message', (chatId: string) => {
-//              toast.success(chatId)
-//              utils.chat.getMessages.refetch({chatId})
-//          })   
-//          newSocket.connect()
-
-//          setSocket(newSocket)
-//        }
-
-//        return () => {
-//          if(socket) socket.disconnect()
-//        }
-
-//     }, [])
-
-//     return (
-//       <SocketContext.Provider value={{ socket, isConnected }}>
-//         {children}
-//       </SocketContext.Provider>
-//     )
-// }

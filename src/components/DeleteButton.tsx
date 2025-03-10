@@ -1,5 +1,7 @@
 import {Trash} from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
+import { useSocket } from '~/hooks/useSocket'
 import { api } from '~/trpc/react'
 
 type Props = {
@@ -8,11 +10,18 @@ type Props = {
 }
 
 export default function DeleteButton({chatId, setIsDeleting}: Props) {
+
+  const socket = useSocket(chatId)
+
+  const {data: session} = useSession()
  
   const utils = api.useUtils()
   const deleteChat = api.user.deleteChat.useMutation({
     onMutate: () => setIsDeleting(true),
-    onSuccess: () => toast.success('Deleted', { position: 'bottom-right'}),
+    onSuccess: () => {
+      toast.success('Deleted', { position: 'bottom-right'})
+      socket.emit('delete:chat', session?.user.id)
+    },
     onError: (err) => {
       console.error(err)
       toast.error(err.message)

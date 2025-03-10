@@ -7,8 +7,9 @@ import { api } from "~/trpc/react";
 import { useRouter } from 'nextjs-toploader/app'
 import { toast } from "sonner";
 import Link from "next/link";
-import { useChat } from "~/hooks/useChat";
+import { useSocket } from "~/hooks/useSocket";
 import { useSession } from "next-auth/react";
+import { colors } from '~/lib/utils'
 
 type Props = {
     userId: number
@@ -16,8 +17,16 @@ type Props = {
     participants: (ChatParticipant & { user: Pick<User, "username" | "ProfilePicture"> }) []
 }
 
-const colors = ['red', 'blue', 'green', 'orange', 'purple']
-const randomColor = colors[Math.floor(Math.random() * colors.length)]
+// const randomColor = colors[Math.floor(Math.random() * colors.length)]
+
+function getColor(id: string) {
+   let color = localStorage.getItem(`${id}-color`)
+   if(!color) {
+     color = colors[Math.floor(Math.random() * colors.length)] as string
+     localStorage.setItem(`${id}-color`, color)
+   }
+   return color
+}
 
 export default function ChatSideBar({participants, chat, userId}: Props) {
 
@@ -26,7 +35,7 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
   const {data: session, status} = useSession()
   // const userId = session?.user.id
 
-  const { socket } = useChat(chat.id)
+  const socket = useSocket(chat.id)
 
   const router = useRouter()
 
@@ -53,6 +62,7 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
               {participants.map((participant, i) => {
                   const image = participant.user.ProfilePicture
                   const name = participant.user.username
+                  const randomColor = getColor(participant.id)
                   return <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{ease: 'easeInOut', delay: 0.1 * i}}
                     key={participant.id} className="flex items-center gap-2 p-2 rounded-lg border bg-blue-600/10">
                       <div className="shrink-0 w-fit rounded-full">
@@ -77,7 +87,7 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
                <ArrowLeft className="group-hover:-translate-x-1 duration-200"/> Go to chats
            </Link>
          ) : (
-          <button onClick={() => leaveChat.mutate({chatId: chat.id})} disabled={leaveChat.isPending} className="flex-center my-1 gap-2 bg-red-700 hover:bg-red-600 tracking-wide hover:gap-4 text-lg font-semibold duration-200 border rounded-md mx-2 py-1 disabled:cursor-not-allowed disabled:opacity-70">
+          <button onClick={() => leaveChat.mutate({chatId: chat.id})} disabled={leaveChat.isPending} className="flex-center my-1 gap-2 bg-red-700 hover:bg-red-600 tracking-wide hover:gap-4 text-lg font-semibold duration-200 border-2 border-zinc-400 rounded-md mx-2 py-1 disabled:cursor-not-allowed disabled:opacity-70">
               {leaveChat.isPending ? (
                 <>
                     <div className='size-5 border-[3px] border-white/50 border-t-white rounded-full animate-spin'/> Leaving...

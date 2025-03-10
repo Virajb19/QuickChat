@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Plus } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { db } from "~/server/db";
 import { auth } from "~/server/auth";
 import CreateChatButton from "~/components/CreateChatButton";

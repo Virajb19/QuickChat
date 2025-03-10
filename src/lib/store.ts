@@ -1,7 +1,5 @@
 import { create } from 'zustand'
 import { io, Socket } from 'socket.io-client';
-import { toast } from 'sonner';
-import { ChatParticipant, Message } from '@prisma/client';
 
 type loadingState = {
     loading: boolean,
@@ -15,10 +13,24 @@ export const useLoadingState = create<loadingState>((set, get) => ({
      }
 }))
 
-// type useChatType = {
-//    messages: Message[],
-//    participants: ChatParticipant[]
-// }
+// type SocketState =  {
+//     socket: Socket | null
+//     getSocket: () => Socket
+//   }
+  
+//   export const useSocketStore = create<SocketState>((set, get) => ({
+//     socket: null,
+  
+//     getSocket: () => {
+//       let socket = get().socket
+//       if (!socket) {
+//         socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL, { reconnectionAttempts: 10, autoConnect: false })
+//         set({ socket })
+//       }
+//       return socket
+//     },
+//   }))
+  
 
 type SocketState =  {
     socket: Socket | null;

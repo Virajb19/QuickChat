@@ -11,7 +11,7 @@ import { z } from "zod";
 import { api } from "~/trpc/react";
 import {useRouter} from 'nextjs-toploader/app'
 import { toast } from "sonner";
-import { useChat } from "~/hooks/useChat";
+import { useSocket } from "~/hooks/useSocket";
 import { useSession } from "next-auth/react";
 
 type Input = z.infer<typeof joinChatSchema>
@@ -47,7 +47,7 @@ export default function JoinButton() {
     defaultValues: { chatId: '', passcode: ''}
 })
 
- const { socket } = useChat(form.getValues('chatId'))
+ const socket = useSocket(form.getValues('chatId'))
 
 async function onSubmit(data: Input) {
     await joinChat.mutateAsync(data)

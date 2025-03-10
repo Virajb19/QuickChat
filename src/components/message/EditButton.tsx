@@ -9,13 +9,13 @@ import { z } from "zod";
 import { editMessageSchema } from "~/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { twMerge } from "tailwind-merge";
-import { useChat } from "~/hooks/useChat";
+import { useSocket } from "~/hooks/useSocket";
 
 type Input = z.infer<typeof editMessageSchema>
 
 export default function EditButton({messageId, chatId, prevContent}: {messageId: string, chatId: string, prevContent: string}) {
 
-   const { socket } = useChat(chatId)
+   const socket = useSocket(chatId)
 
     const [open, setOpen] = useState(false)
     const utils = api.useUtils()
