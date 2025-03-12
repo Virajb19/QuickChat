@@ -33,7 +33,7 @@ export const userRouter = createTRPCRouter({
      return !chat
   }),
   getChats: protectedProcedure.query(async ({ctx}) => {
-    return await ctx.db.chat.findMany({ where: { ownerId: parseInt(ctx.session.user.id)}, orderBy: {createdAt: 'desc'}})
+    return await ctx.db.chat.findMany({ where: { ownerId: parseInt(ctx.session.user.id)}, orderBy: {createdAt: 'asc'}, include: {participants: {select: {id: true}}}})
   }),
   deleteChat: protectedProcedure.input(z.object({chatId: z.string()})).mutation(async ({ctx, input}) => {
       const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true}})
@@ -56,13 +56,13 @@ export const userRouter = createTRPCRouter({
 
       if(chat.passcode !== passcode) throw new TRPCError({code: 'UNAUTHORIZED', message: 'Incorrect passcode'})
 
-      await ctx.db.chatParticipant.create({data: {chatId, userId}})
-      return { chatId: chat.id , success: true, message: 'Joined chat successfully' }
+      const participant = await ctx.db.chatParticipant.create({data: {chatId, userId}, include: {user: {select: {ProfilePicture: true, username: true}}}})
+      return { chatId: chat.id , participant , success: true, message: 'Joined chat successfully' }
   }),
   leaveChat: protectedProcedure.input(z.object({chatId: z.string().cuid()})).mutation(async ({ctx,input}) => {
       const userId = parseInt(ctx.session.user.id)
 
-      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true, passcode: true, ownerId: true}})
+      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true, passcode: true, ownerId: true, title: true}})
       if(!chat) throw new TRPCError({code: 'NOT_FOUND', message: 'chat not found'})
 
       if(chat.ownerId === userId) throw new TRPCError({code: 'BAD_REQUEST', message: 'You cannot leave a chat that you own'})
@@ -71,9 +71,9 @@ export const userRouter = createTRPCRouter({
       if(!participant) throw new TRPCError({ code: "NOT_FOUND", message: "You are not a participant in this chat" })
 
       // await ctx.db.chatParticipant.update({where: {id: participant.id}, data: {leftAt: new Date()}})
-      await ctx.db.chatParticipant.delete({where: {id: participant.id}})
+      const deletedParticipant = await ctx.db.chatParticipant.delete({where: {id: participant.id}, select: {id: true}})
 
-      return {chatId: chat.id, success: true, message: "Left chat successfully"}
+      return {chatId: chat.id, title: chat.title, participantId: deletedParticipant.id, success: true, message: "Left chat successfully"}
 
   }),
   createMessage: protectedProcedure.input(createMessageSchema.extend({chatId: z.string().cuid()})).mutation(async ({ctx,input}) => {

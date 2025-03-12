@@ -20,7 +20,7 @@ export default function DeleteButton({chatId, setIsDeleting}: Props) {
     onMutate: () => setIsDeleting(true),
     onSuccess: () => {
       toast.success('Deleted', { position: 'bottom-right'})
-      socket.emit('delete:chat', session?.user.id)
+      socket.emit('delete:chat', session?.user.name)
     },
     onError: (err) => {
       console.error(err)

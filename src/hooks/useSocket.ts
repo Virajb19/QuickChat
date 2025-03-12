@@ -1,27 +1,27 @@
-import { Message, User } from '@prisma/client'
+import { ChatParticipant, Message, User } from '@prisma/client'
 import { useEffect } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { toast } from 'sonner'
 import { api } from '~/trpc/react'
 import { useRouter } from 'nextjs-toploader/app'
+import { useSocketStore } from '~/lib/store'
 
 type message = Message & { sender: Pick<User, "ProfilePicture" | "username">}
+type participant = ChatParticipant & {user: Pick<User, "ProfilePicture" | "username">}
 
 let socket: Socket | null = null
 
- const getSocket = () => {
+ const getSocket = (chatId: string) => {
   if (!socket) {
-      socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL, {reconnectionAttempts: 10, autoConnect: false})
+      socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL, {reconnectionAttempts: 10, autoConnect: false, auth: { chatId }})
   }
   return socket
 }
 
-// Try using ZUSTAND STORE to prevent duplicate listeners
-// use it just for socket along with useChat hook
-
 export const useSocket = (chatId: string) => {
     const utils = api.useUtils()
-    const socket = getSocket()
+   //  const socket = getSocket(chatId)
+    const { socket, connectSocket} = useSocketStore()
 
     const router = useRouter()
 
@@ -32,17 +32,23 @@ export const useSocket = (chatId: string) => {
           socket.connect()
        }
 
+       if(!socket) {
+         connectSocket(chatId)
+       }
+
+       if(!socket) return
+
        socket.on("connect", () => console.log("Connected to socket"))
        socket.on("disconnect", () => console.log("Socket disconnected"))
 
        const sendMessage = (msg: message) => {
-            //  toast.success(JSON.stringify(msg))
-            utils.chat.getMessages.refetch({chatId})
+            // toast.success(JSON.stringify(msg))
+            // utils.chat.getMessages.refetch({chatId})
             utils.chat.getMessages.setData({chatId}, (messages) => [...(messages ?? []), msg])
        }
 
        const deleteMessage = (messageId: string) => {
-          // utils.chat.getMessages.refetch({chatId})
+          //  utils.chat.getMessages.refetch({chatId})
           utils.chat.getMessages.setData({chatId}, (messages) => (messages?.filter(msg => msg.id !== messageId)))
        }
 
@@ -52,14 +58,16 @@ export const useSocket = (chatId: string) => {
            ))
        }
 
-       const leaveChat = (name: string) => {
+       const leaveChat = (name: string, participantId: string) => {
          toast.success(`${name} left the chat`, { position: 'bottom-right', duration: 5000})
+         utils.chat.getParticipants.setData({chatId}, (participants) => participants?.filter(p => p.id !== participantId))
          router.refresh()
        }
 
        // multiple toasts appearing means there are more than one event listeners or duplicate listeners
-       const joinChat = (name: string) => {
-         toast.success(`${name} joined the chat`, { position: 'bottom-right', duration: 5000})
+       const joinChat = (participant: participant) => {
+         toast.success(`${participant.user.username} joined the chat`, { position: 'bottom-right', duration: 5000})
+         utils.chat.getParticipants.setData({chatId}, (participants) => [...(participants ?? []), participant])
          router.refresh()
        }
 
@@ -75,7 +83,7 @@ export const useSocket = (chatId: string) => {
        socket.off('leave:chat').on('leave:chat', leaveChat)
        socket.off('delete:chat').on('delete:chat',deleteChat)
       //  socket.off()
-
+  
        return () => {
          if(socket) {
             // socket.disconnect()

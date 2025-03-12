@@ -46,9 +46,12 @@ export default function ChatsPage() {
                       <h2 className="text-3xl font-bold">{chat.title}</h2>
                       <ChatMenu chatId={chat.id}/>
                   </div>
-                  <div className="flex flex-col items-start font-semibold">
-                    <p className="truncate">Passcode:- <span className="text-xl">{chat.passcode}</span></p>
-                    <p>Created At:- <span className="text-xl">{new Date(chat.createdAt).toLocaleDateString()}</span></p>
+                  <div className="flex items-end justify-between">
+                    <div className="flex flex-col items-start font-semibold">
+                      <p className="truncate">Passcode:- <span className="text-xl">{chat.passcode}</span></p>
+                      <p>Created At:- <span className="text-xl">{new Date(chat.createdAt).toLocaleDateString()}</span></p>
+                    </div>
+                     <p className="text-lg font-semibold flex items-center">Total members: <span className="font-bold text-xl ml-2 text-blue-400"> {chat.participants.length}</span></p>
                   </div>
               </motion.li>
             })}

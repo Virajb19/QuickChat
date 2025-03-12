@@ -1,6 +1,6 @@
 'use client'
 
-import { User, Mail } from "lucide-react"
+import { User, Mail, ExternalLink } from "lucide-react"
 import Image from "next/image"
 import { motion } from 'framer-motion'
 import { Session } from "next-auth"
@@ -8,6 +8,8 @@ import { useSession } from "next-auth/react"
 import { Chat, ChatParticipant, Message } from "@prisma/client"
 import JoinButton from "./JoinButton"
 import { api } from "~/trpc/react"
+import LeaveButton from "./LeaveButton"
+import Link from "next/link"
 
 type Props = {
     session: Session,
@@ -59,12 +61,22 @@ export default function UserProfile({ session, joinedChats }: Props) {
                  ) : (
                     <>
                        {joinedChats.map(chatParticipant => {
-                            return <div key={chatParticipant.id} className="border rounded-lg p-2">
-                                 <div className="flex flex-col">
+                            const participantCount = chatParticipant.Chat.participants.length
+                            return <div key={chatParticipant.id} className="border-2 border-blue-700 font-semibold rounded-lg p-2 flex flex-col gap-2">
+                                 <div className="flex items-center justify-between">
                                      <h5 className="text-2xl uppercase font-semibold">{chatParticipant.Chat.title}</h5>
-                                     
+                                     <div className="flex items-center gap-2">
+                                        <Link href={`/chats/${chatParticipant.chatId}`} className="flex-center gap-2 group bg-blue-700 hover:bg-blue-600 p-2 rounded-lg font-semibold">
+                                            <ExternalLink className="group-hover:translate-x-1 group-hover:-translate-y-1 duration-300"/> Visit
+                                        </Link>
+                                        <LeaveButton username={session.user.name ?? ''} chatId={chatParticipant.chatId}/>
+                                     </div>
                                  </div>
-                            </div>
+                                 <div className="flex items-center justify-between">
+                                      <p>Joined At: <span className="text-lg">{new Date(chatParticipant.joinedAt).toLocaleDateString()}</span></p>
+                                       <p className="">Total members: <span className="text-xl text-blue-500">{participantCount}</span></p>
+                                 </div>
+                            </div>  
                        })}   
                     </>
                  )}

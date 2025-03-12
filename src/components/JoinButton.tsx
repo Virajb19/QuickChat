@@ -21,17 +21,17 @@ export default function JoinButton() {
   const router = useRouter()
   const [open, setOpen] = useState(false)
 
-  const {data: session, status} = useSession()
+  // const {data: session, status} = useSession()
   
   const utils = api.useUtils()
 
   const joinChat = api.user.joinChat.useMutation({
-    onSuccess: ({chatId}) => {
+    onSuccess: ({chatId, participant}) => {
         setOpen(false)
         router.push(`/chats/${chatId}`)
         router.refresh()
         toast.success('Joined')
-        socket.emit('join:chat', session?.user.name)
+        socket.emit('join:chat', participant)
      },
      onError: (err) => {
        console.error(err)

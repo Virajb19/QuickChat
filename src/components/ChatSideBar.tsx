@@ -2,7 +2,7 @@
 
 import { Chat, ChatParticipant, User } from "@prisma/client";
 import { motion } from 'framer-motion'
-import { ArrowLeft, LogOut } from 'lucide-react'
+import { ArrowLeft, Check, LogOut, Users } from 'lucide-react'
 import { api } from "~/trpc/react";
 import { useRouter } from 'nextjs-toploader/app'
 import { toast } from "sonner";
@@ -10,6 +10,10 @@ import Link from "next/link";
 import { useSocket } from "~/hooks/useSocket";
 import { useSession } from "next-auth/react";
 import { colors } from '~/lib/utils'
+import { Skeleton } from "./ui/skeleton";
+import { useLocalStorage } from 'usehooks-ts'
+import { useMemo } from "react";
+import { twMerge } from "tailwind-merge";
 
 type Props = {
     userId: number
@@ -35,17 +39,24 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
   const {data: session, status} = useSession()
   // const userId = session?.user.id
 
+  const [showOnline, setShowOnline] = useLocalStorage('showOnlineUsers', false)
+
+  // Import from zustand store directly useSocketStore()
   const socket = useSocket(chat.id)
 
   const router = useRouter()
 
-  // const {data: chatParticipants, isLoading, isError} = api.chat.getParticipants.useQuery({chatId: chat.id}, {refetchInterval: 5 * 60 * 1000})
+  const {data: chatParticipants, isLoading, isError} = api.chat.getParticipants.useQuery({chatId: chat.id}, {refetchInterval: 5 * 60 * 1000})
+
+  const filteredParticipants = useMemo(() => {
+       return showOnline ? chatParticipants?.filter(p => p.isOnline) : chatParticipants
+  }, [showOnline, chatParticipants])
 
   const leaveChat = api.user.leaveChat.useMutation({
-    onSuccess: () => {
+    onSuccess: ({participantId}) => {
        router.push('/')
        toast.success(`Left the chat ${chat.title}`)
-       socket.emit('leave:chat', session?.user.name ?? '')
+       socket.emit('leave:chat', session?.user.name ?? '', participantId)
     },
     onError: (err) => {
        console.error(err) 
@@ -54,32 +65,55 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
   })
 
   return <div className="flex flex-col gap-1 w-1/4 border-r-2">
-         <div className="flex items-center gap-3 p-3 border-b border-zinc-500">
-             <h4 className="text-2xl capitalize font-bold truncate">{chat.title}</h4>
-             <span className="text-gray-300 font-semibold text-lg">({participants.length})</span>
-         </div>
-        <div className="flex flex-col p-1 gap-2 h-[calc(90vh-17rem)] overflow-y-scroll border-b-2 border-zinc-400">
-              {participants.map((participant, i) => {
-                  const image = participant.user.ProfilePicture
-                  const name = participant.user.username
-                  const randomColor = getColor(participant.id)
-                  return <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{ease: 'easeInOut', delay: 0.1 * i}}
-                    key={participant.id} className="flex items-center gap-2 p-2 rounded-lg border bg-blue-600/10">
-                      <div className="shrink-0 w-fit rounded-full">
-                        {image ? (
-                            <img src={image} className="size-10 rounded-full"/>
-                        ) : (
-                            <span style={{backgroundColor: randomColor}} className="size-10 uppercase font-semibold flex-center text-lg rounded-full">
-                                {name.split(' ').slice(0,2).map(name => name[0]).join('')}
-                            </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col">
-                        <strong className="text-base capitalize truncate">{name}</strong>
-                        <span className="font-semibold text-xs text-gray-400">{participant.isOnline ? 'online' : 'offline'}</span>
-                      </div>
-                  </motion.div>
+        <div className="flex flex-col gap-1 items-start border-b border-zinc-500 p-3">
+            <div className="flex items-center gap-3">
+                <h4 className="text-2xl uppercase font-bold truncate">{chat.title}</h4>
+                <span className="text-gray-300 font-semibold text-lg">({participants.length})</span>
+            </div>
+            <div className="flex items-center gap-2">
+            <button onClick={() => setShowOnline(!showOnline)} className={twMerge("size-5 border-2 border-gray-400 rounded-sm flex-center", showOnline && 'bg-white border-transparent')}>
+                   {showOnline && <Check className="text-[#1f1e20]" strokeWidth={3}/>}
+               </button>
+               <span className="text-base font-semibold text-gray-400">Show online</span>
+            </div>
+        </div>
+        <div className="flex flex-col p-1 gap-2 h-[calc(90vh-19rem)] overflow-y-scroll border-b-2 border-zinc-400">
+             {(isLoading || !chatParticipants) ? (
+                  <>
+                     {Array.from({length: 5}).map((_,i) => {
+                        return <Skeleton key={i} className="h-14 w-full"/>
+                     })}
+                  </>
+             ) : chatParticipants.length === 0 ? (
+                 <div className="flex flex-col gap-2 items-center m-auto ">
+                   <Users />
+                   <h4 className="text-lg font-bold uppercase">Invite users</h4>
+                 </div>
+             ) : (
+              <>
+              {chatParticipants.map((participant, i) => {
+                const image = participant.user.ProfilePicture
+                const name = participant.user.username
+                const randomColor = getColor(participant.id)
+                return <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{ease: 'easeInOut', delay: 0.1 * i}}
+                  key={participant.id} className="flex items-center gap-2 p-2 rounded-lg border bg-blue-600/10">
+                    <div className="shrink-0 w-fit rounded-full">
+                      {image ? (
+                          <img src={image} className="size-10 rounded-full"/>
+                      ) : (
+                          <span style={{backgroundColor: randomColor}} className="size-10 uppercase font-bold flex-center text-xl rounded-full">
+                              {name.split(' ').slice(0,2).map(name => name[0]).join('')}
+                          </span>
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      <strong className="text-base capitalize truncate">{name}</strong>
+                      <span className="font-semibold text-xs text-gray-400">{participant.isOnline ? 'online' : 'offline'}</span>
+                    </div>
+                </motion.div>
               })}
+               </>
+             )}
               {/* <div className="bg-red-400 w-10 h-screen shrink-0"/> */}
         </div>
          {chat.ownerId === userId ? (
