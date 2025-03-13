@@ -16,15 +16,15 @@ import { toast } from "sonner";
 
 export default function UserAccountNav() {
 
-    // const updateStatus = api.user.updateStatus.useMutation({
-    //     onSuccess: () => {
+    //    const updateStatus = api.user.updateStatus.useMutation({
+//         onSuccess: () => {
 
-    //     }, 
-    //     onError: (err) => {
-    //         console.error(err)
-    //         toast.error(err.message)
-    //     }
-    // })
+//         }, 
+//         onError: (err) => {
+//             console.error(err)
+//             toast.error(err.message)
+//         }
+//     })
 
     const {data: session} = useSession()
     const user = session?.user

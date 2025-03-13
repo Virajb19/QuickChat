@@ -9,32 +9,39 @@ import { useSocketStore } from '~/lib/store'
 type message = Message & { sender: Pick<User, "ProfilePicture" | "username">}
 type participant = ChatParticipant & {user: Pick<User, "ProfilePicture" | "username">}
 
-let socket: Socket | null = null
+// let socket: Socket | null = null
 
- const getSocket = (chatId: string) => {
-  if (!socket) {
-      socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL, {reconnectionAttempts: 10, autoConnect: false, auth: { chatId }})
-  }
-  return socket
-}
+//  const getSocket = (chatId: string) => {
+//   if (!socket) {
+//       socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL, {reconnectionAttempts: 10, autoConnect: false, auth: { chatId }})
+//   }
+//   return socket
+// }
 
 export const useSocket = (chatId: string) => {
     const utils = api.useUtils()
    //  const socket = getSocket(chatId)
-    const { socket, connectSocket} = useSocketStore()
+    const { socket, connectSocket, chatId: prevChatId} = useSocketStore()
 
     const router = useRouter()
 
    //  const {data: session, status} = useSession()
 
-    useEffect(() => {
-       if(!socket.connected) {
-          socket.connect()
-       }
+   useEffect(() => {
+      if (!socket || prevChatId !== chatId) {
+        connectSocket(chatId);
+      }
+   }, [chatId,connectSocket])
 
-       if(!socket) {
-         connectSocket(chatId)
-       }
+    useEffect(() => {
+      //  if(!socket.connected) {
+      //     socket.connect()
+      //  }
+
+      //  if(!socket) {
+      //    connectSocket(chatId)
+      //    return
+      //  }
 
        if(!socket) return
 
@@ -76,13 +83,14 @@ export const useSocket = (chatId: string) => {
           toast.success(`${name} deleted the chat`)
        }
 
+      //  toast.success('Setting up listeners')
+
        socket.off('send:message').on('send:message', sendMessage)
        socket.off('delete:message').on('delete:message', deleteMessage)
        socket.off('edit:message').on('edit:message', editMessage)
        socket.off('join:chat').on('join:chat', joinChat)
        socket.off('leave:chat').on('leave:chat', leaveChat)
        socket.off('delete:chat').on('delete:chat',deleteChat)
-      //  socket.off()
   
        return () => {
          if(socket) {
@@ -95,8 +103,8 @@ export const useSocket = (chatId: string) => {
             socket.off('delete:chat', deleteChat)
          }
        }
-
-    }, [chatId])
+    // Adding socket is necessary to add event listeners see execution flow or await connectSocket 
+    }, [chatId,socket])
 
     return socket
 }

@@ -63,10 +63,6 @@ export default function MessageInput({chatId, userId}: {chatId: string, userId: 
         return () => document.removeEventListener('keydown', handleKeyDown)
       }, [])
 
-    //   useEffect(() => {
-    //       initSocket()
-    //   }, [initSocket])
-
   return <div className="p-1 border-t">
         <Form {...form}>
             <form className='flex items-center gap-2 p-2' onSubmit={form.handleSubmit(onSubmit)}>

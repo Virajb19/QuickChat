@@ -14,6 +14,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useLocalStorage } from 'usehooks-ts'
 import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
+import { useSocketStore } from "~/lib/store";
 
 type Props = {
     userId: number
@@ -42,7 +43,8 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
   const [showOnline, setShowOnline] = useLocalStorage('showOnlineUsers', false)
 
   // Import from zustand store directly useSocketStore()
-  const socket = useSocket(chat.id)
+  // const socket = useSocket(chat.id)
+  const { socket } = useSocketStore()
 
   const router = useRouter()
 
@@ -56,7 +58,7 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
     onSuccess: ({participantId}) => {
        router.push('/')
        toast.success(`Left the chat ${chat.title}`)
-       socket.emit('leave:chat', session?.user.name ?? '', participantId)
+       socket?.emit('leave:chat', session?.user.name ?? '', participantId)
     },
     onError: (err) => {
        console.error(err) 
@@ -107,7 +109,7 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
                       )}
                     </div>
                     <div className="flex flex-col">
-                      <strong className="text-base capitalize truncate">{name}</strong>
+                      <strong className="text-base uppercase truncate">{name}</strong>
                       <span className="font-semibold text-xs text-gray-400">{participant.isOnline ? 'online' : 'offline'}</span>
                     </div>
                 </motion.div>

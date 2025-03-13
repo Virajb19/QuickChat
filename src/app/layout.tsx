@@ -4,11 +4,9 @@ import { type Metadata } from "next";
 import { Space_Grotesk } from 'next/font/google';
 import Providers from "./providers";
 import NextTopLoader from 'nextjs-toploader';
-
 import { TRPCReactProvider } from "~/trpc/react";
 import Navbar from "~/components/Navbar";
-import { GridBackgroundDemo } from "~/components/GridBG";
-import DotsPattern from "~/components/DotPattern";
+import { StarsBackground } from '~/components/ui/stars-background';
 
 export const metadata: Metadata = {
   title: "Quick Chat",
@@ -21,7 +19,6 @@ const grotesk = Space_Grotesk({
   weight: ['400', '700'],
 });
 
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -30,6 +27,7 @@ export default function RootLayout({
       <body suppressHydrationWarning={true}>
         <Providers>
            <Navbar />
+           <StarsBackground className="-z-10"/>
            <NextTopLoader height={4} color="#38bdf8" showSpinner={false} easing="ease"/>
            <TRPCReactProvider>{children}</TRPCReactProvider>
         </Providers>
