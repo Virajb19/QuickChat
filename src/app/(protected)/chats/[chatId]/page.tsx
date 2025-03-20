@@ -13,7 +13,7 @@ export default async function ChatPage({ params } : { params: Promise<{ chatId: 
 
   const {chatId} = await params
 
-  const chat = await db.chat.findUnique({where: {id: chatId}, select: { id: true, ownerId: true, title: true}})
+  const chat = await db.chat.findUnique({where: {id: chatId}, include: {owner: {select: {ProfilePicture: true, username: true}}}})
   if(!chat) return notFound()
 
   const isParticipant = await db.chatParticipant.findUnique({where: {userId_chatId: {userId,chatId}}, select: {id: true}})

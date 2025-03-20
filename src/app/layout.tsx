@@ -25,12 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${grotesk.className} antialiased`} suppressHydrationWarning={true}>
       <body suppressHydrationWarning={true}>
-        <Providers>
-           <Navbar />
-           <StarsBackground className="-z-10"/>
-           <NextTopLoader height={4} color="#38bdf8" showSpinner={false} easing="ease"/>
-           <TRPCReactProvider>{children}</TRPCReactProvider>
-        </Providers>
+           <TRPCReactProvider>
+              <Providers>
+                <Navbar />
+                <StarsBackground className="-z-10"/>
+                <NextTopLoader height={4} color="#38bdf8" showSpinner={false} easing="ease"/>
+                    {children}
+              </Providers>
+           </TRPCReactProvider>
       </body>
     </html>
   );

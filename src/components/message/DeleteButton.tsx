@@ -21,7 +21,7 @@ export default function DeleteButton({messageId,chatId}: {messageId: string,chat
     },
     onSuccess: () => {
       toast.success('Deleted')
-      socket.emit('delete:message', messageId)
+      socket?.emit('delete:message', messageId)
     },
     onError: (err, {messageId}, prevMessages) => {
        console.error(err)

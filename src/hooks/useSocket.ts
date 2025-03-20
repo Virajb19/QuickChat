@@ -84,6 +84,10 @@ export const useSocket = (chatId: string) => {
           toast.success(`${name} deleted the chat`)
        }
 
+       const userStatusChange = (userId: number) => {
+        utils.chat.getParticipants.setData({chatId}, (participants) => participants?.map(p => p.userId === userId ? {...p, isOnline: !p.isOnline} : p))
+       }
+
       //  toast.success('Setting up listeners')
 
        socket.off('send:message').on('send:message', sendMessage)
@@ -92,6 +96,7 @@ export const useSocket = (chatId: string) => {
        socket.off('join:chat').on('join:chat', joinChat)
        socket.off('leave:chat').on('leave:chat', leaveChat)
        socket.off('delete:chat').on('delete:chat',deleteChat)
+       socket.off('user:statusChange').on('user:statusChange', userStatusChange)
   
        return () => {
          if(socket) {

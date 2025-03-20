@@ -1,7 +1,7 @@
 'use client'
 
 import { Chat, ChatParticipant, User } from "@prisma/client";
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Check, LogOut, Users } from 'lucide-react'
 import { api } from "~/trpc/react";
 import { useRouter } from 'nextjs-toploader/app'
@@ -18,7 +18,7 @@ import { useSocketStore } from "~/lib/store";
 
 type Props = {
     userId: number
-    chat: Pick<Chat, "id" | "ownerId" | "title">,
+    chat: Chat & { owner: Pick<User, "ProfilePicture" | "username">},
     participants: (ChatParticipant & { user: Pick<User, "username" | "ProfilePicture"> }) []
 }
 
@@ -54,6 +54,13 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
        return showOnline ? chatParticipants?.filter(p => p.isOnline) : chatParticipants
   }, [showOnline, chatParticipants])
 
+  const owner = useMemo(() => {
+     return {
+        image: chat.owner.ProfilePicture,
+        name: chat.owner.username
+     }
+  }, [chat])
+
   const leaveChat = api.user.leaveChat.useMutation({
     onSuccess: ({participantId}) => {
        router.push('/')
@@ -80,40 +87,59 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
             </div>
         </div>
         <div className="flex flex-col p-1 gap-2 h-[calc(90vh-19rem)] overflow-y-scroll border-b-2 border-zinc-400">
-             {(isLoading || !chatParticipants) ? (
+             {(isLoading || !filteredParticipants) ? (
                   <>
                      {Array.from({length: 5}).map((_,i) => {
                         return <Skeleton key={i} className="h-14 w-full"/>
                      })}
                   </>
-             ) : chatParticipants.length === 0 ? (
+             ) : filteredParticipants.length === 0 ? (
                  <div className="flex flex-col gap-2 items-center m-auto ">
                    <Users />
                    <h4 className="text-lg font-bold uppercase">Invite users</h4>
                  </div>
              ) : (
               <>
-              {chatParticipants.map((participant, i) => {
-                const image = participant.user.ProfilePicture
-                const name = participant.user.username
-                const randomColor = getColor(participant.id)
-                return <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{ease: 'easeInOut', delay: 0.1 * i}}
-                  key={participant.id} className="flex items-center gap-2 p-2 rounded-lg border bg-blue-600/10">
+            {/* <AnimatePresence> */}
+             {chat.ownerId !== userId && (
+                  <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{ease: 'easeInOut', delay: 0.1}}
+                  className="flex items-center gap-2 p-2 rounded-lg border bg-blue-600/10">
                     <div className="shrink-0 w-fit rounded-full">
-                      {image ? (
-                          <img src={image} className="size-10 rounded-full"/>
+                      {chat.owner.ProfilePicture ? (
+                          <img src={chat.owner.ProfilePicture } className="size-10 rounded-full"/>
                       ) : (
-                          <span style={{backgroundColor: randomColor}} className="size-10 uppercase font-bold flex-center text-xl rounded-full">
-                              {name.split(' ').slice(0,2).map(name => name[0]).join('')}
+                          <span style={{backgroundColor: 'blue'}} className="size-10 uppercase font-bold flex-center text-xl rounded-full">
+                              {chat.owner.username.split(' ').slice(0,2).map(name => name[0]).join('')}
                           </span>
                       )}
                     </div>
                     <div className="flex flex-col">
-                      <strong className="text-base uppercase truncate">{name}</strong>
-                      <span className="font-semibold text-xs text-gray-400">{participant.isOnline ? 'online' : 'offline'}</span>
+                      <strong className="text-base uppercase truncate">{owner.name}</strong>
                     </div>
                 </motion.div>
-              })}
+             )}
+                {filteredParticipants.map((participant, i) => {
+                  const image = participant.user.ProfilePicture
+                  const name = participant.user.username
+                  const randomColor = getColor(participant.id)
+                  return <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{ease: 'easeInOut', delay: 0.1 * i}}
+                    key={participant.id} className="flex items-center gap-2 p-2 rounded-lg border bg-blue-600/10">
+                      <div className="shrink-0 w-fit rounded-full">
+                        {image ? (
+                            <img src={image} className="size-10 rounded-full"/>
+                        ) : (
+                            <span style={{backgroundColor: randomColor}} className="size-10 uppercase font-bold flex-center text-xl rounded-full">
+                                {name.split(' ').slice(0,2).map(name => name[0]).join('')}
+                            </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <strong className="text-base uppercase truncate">{name}</strong>
+                        <span className="font-semibold text-xs text-gray-400">{participant.isOnline ? 'online' : 'offline'}</span>
+                      </div>
+                  </motion.div>
+                })}
+              {/* </AnimatePresence> */}
                </>
              )}
               {/* <div className="bg-red-400 w-10 h-screen shrink-0"/> */}

@@ -8,6 +8,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { api } from '~/trpc/react';
+import { useSocketStore } from '~/lib/store';
 
 export const DemarcationLine = () => (
     <div className="flex items-center my-4">
@@ -28,7 +29,12 @@ export function OAuthButton({label, provider, loading, setLoading}: Props) {
 
     // const [loading,setLoading] = useState(false)
 
+    const { socket } = useSocketStore()
+
     const updateStatus = api.user.updateStatus.useMutation({
+      onSuccess: ({chatIds,userId}) => {
+        socket?.emit('user:statusChange', chatIds, userId)
+      },
       onError: (err) => {
          console.error(err)
          toast.error(err.message)
@@ -43,6 +49,7 @@ export function OAuthButton({label, provider, loading, setLoading}: Props) {
           setLoading(true)
           await signIn(provider, { callbackUrl: "/" });
           // toast.success("Signed in successfully");
+          updateStatus.mutate({status: true})
         } catch (error) {
           toast.error("Something went wrong !!!");
           setLoading(false)

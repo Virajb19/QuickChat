@@ -13,25 +13,36 @@ import { signOut, useSession } from 'next-auth/react';
 import UserAvatar from './UserAvatar';
 import Link from "next/link";
 import { toast } from "sonner";
-import { useMutation } from '@tanstack/react-query'
+import { useSocketStore } from "~/lib/store";
 
 export default function UserAccountNav() {
 
-    //    const updateStatus = api.user.updateStatus.useMutation({
-//         onSuccess: () => {
+       const utils = api.useUtils()
+  // WE WILL HAVE TO USE SOCKET HERE
+       const { socket } = useSocketStore()
 
-//         }, 
-//         onError: (err) => {
-//             console.error(err)
-//             toast.error(err.message)
-//         }
-//     })
+       const updateStatus = api.user.updateStatus.useMutation({
+        onSuccess: ({chatIds, userId}) => {
+            // await Promise.all(chatIds.map(async chatId => {
+            //      utils.chat.getParticipants.refetch({chatId})
+            // }))
+            socket?.emit('user:statusChange', chatIds, userId)
+        }, 
+        onError: (err) => {
+            console.error(err)
+            toast.error(err.message)
+        }
+    })
 
-   const updateStatus = useMutation({
-     mutationFn: async () => {
-        
-     }
-   })
+//    const updateStatus = useMutation({
+//      mutationFn: async (status: boolean) => {
+//          const res = await axios.put('/api/updateStatus', { status })
+//          return res.data
+//      },
+//      onError: (err) => {
+//         console.error(err)
+//      }
+//    })
 
     const {data: session} = useSession()
     const user = session?.user
@@ -69,7 +80,9 @@ export default function UserAccountNav() {
 
                     {/* disabled={updateStatus.isPending} */}
                     <DropdownMenuItem className='outline-none cursor-pointer' onClick={async () => {
+                        // do not wait this might delay signOut
                         // await updateStatus.mutateAsync({status: false})
+                        updateStatus.mutate({status: false})
                         signOut({callbackUrl: '/'})
                     }}>
                        <span className='flex items-center gap-2 text-base font-bold transition-all duration-300 hover:text-red-500'><LogOut className='size-4' strokeWidth={3}/>Log out </span>

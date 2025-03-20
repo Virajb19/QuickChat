@@ -113,6 +113,8 @@ export const userRouter = createTRPCRouter({
 
       await ctx.db.chatParticipant.updateMany({where: {userId}, data: {isOnline: input.status}})
 
-      return { success: true }
+      const chatIds = await ctx.db.chatParticipant.findMany({where: {userId}, select: {chatId: true}})
+
+      return { success: true, chatIds: chatIds.map(c => c.chatId), userId }
   })
 })

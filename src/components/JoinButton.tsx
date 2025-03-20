@@ -31,7 +31,7 @@ export default function JoinButton() {
         router.push(`/chats/${chatId}`)
         router.refresh()
         toast.success('Joined')
-        socket.emit('join:chat', participant)
+        socket?.emit('join:chat', participant)
      },
      onError: (err) => {
        console.error(err)

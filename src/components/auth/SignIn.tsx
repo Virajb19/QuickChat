@@ -16,6 +16,7 @@ import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { api } from '~/trpc/react'
+import { useSocketStore } from '~/lib/store'
 
 type SignInData = z.infer<typeof SignInSchema>
 
@@ -26,7 +27,14 @@ export default function SignIn() {
   // shared loading state for OAuth buttons
   const [loading,setLoading] = useState(false)
 
+  const { socket } = useSocketStore()
+
+  const utils = api.useUtils()
+
   const updateStatus = api.user.updateStatus.useMutation({
+      onSuccess: ({chatIds, userId}) => {
+      socket?.emit('user:statusChange', chatIds, userId)
+    },
     onError: (err) => {
        console.error(err)
        toast.error(err.message)
