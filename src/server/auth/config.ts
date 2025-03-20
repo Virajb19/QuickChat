@@ -18,7 +18,7 @@ export const authConfig = {
     callbacks: {
         jwt: async ({token}) => {
             if(token && token.sub) {
-              const existingUser = await db.user.findFirst({where: { OR: [{email: token.email}, {OauthId: token.sub}, {id: parseInt(token.sub)}]}, select: {id: true}})
+              const existingUser = await db.user.findFirst({where: { OR: [{email: token.email}, {OauthId: token.sub}, {id: !isNaN(Number(token.sub)) ? parseInt(token.sub) : undefined}]}, select: {id: true}})
               if(existingUser) {
                 token.id = existingUser.id.toString()
               }
@@ -102,8 +102,8 @@ export const authConfig = {
       }
     }),
     GitHubProvider({
-        clientId: process.env.GITHUB_ID || "",
-        clientSecret: process.env.GITHUB_SECRET || ""
+        clientId: process.env.GITHUB_CLIENT_ID || "",
+        clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
        }),
     GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID || "",

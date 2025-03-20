@@ -72,7 +72,7 @@ export default function MessageInput({chatId, userId}: {chatId: string, userId: 
                  render={({ field }) => (
                     <FormItem className='flex flex-col gap-1 grow'>
                      <FormControl>
-                       <textarea className='outline-none h-10 resize-none dark:bg-black px-3 py-1 placeholder:text-lg placeholder:font-semibold rounded-md focus:outline-none border focus:border-transparent focus:ring-[3px] focus:ring-blue-600 duration-200' placeholder='Enter chat title' {...field}/>
+                       <textarea maxLength={10000} className='outline-none h-10 resize-none dark:bg-black px-3 py-1 placeholder:text-lg placeholder:font-semibold rounded-md focus:outline-none border focus:border-transparent focus:ring-[3px] focus:ring-blue-600 duration-200' placeholder='Enter chat title' {...field}/>
                      </FormControl>
                      {/* <FormMessage /> */}
                     </FormItem>

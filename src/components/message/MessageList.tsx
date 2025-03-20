@@ -3,7 +3,7 @@
 import { Loader2, MessageSquare  } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { api } from "~/trpc/react"
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect } from 'react'
 import { formatDistanceToNow} from 'date-fns'
 import MessageMenu from "./MessageMenu"
@@ -47,25 +47,27 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
            </div>
        ) : (
         <>
+        <AnimatePresence>
           {messages.map((message,i) => {
 
               const image = message.sender.ProfilePicture
               const name = message.sender.username
               const isUserMessage = message.senderId === userId
 
-              return <div key={message.id} className={twMerge("flex items-start p-2 gap-3", isUserMessage && 'flex-row-reverse')}>
+              return <motion.div layout exit={{opacity: 0}} key={message.id} className={twMerge("flex items-start p-2 gap-3", isUserMessage && 'flex-row-reverse')}>
                   <MessageMenu chatId={chatId} messageId={message.id} image={image} name={name} isUserMessage={isUserMessage} content={message.content}/>
                    <div className="flex flex-col items-start gap-1">
-                      <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.4, type: 'spring', bounce: 0.7}}
-                          className="max-w-1/2 break-words font-medium text-left p-2 rounded-md bg-blue-600/20">
+                      <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.2, type: 'spring', bounce: 0.7}}
+                          className={twMerge("max-w-1/2 break-words font-medium text-left p-2 rounded-md bg-blue-600/20", isUserMessage && 'bg-blue-600')}>
                             {message.content.split('\n').map(line => {
                               return <p className="whitespace-pre-line">{line}</p>
                             })}
                         </motion.p>
                         <span className="font-semibold text-xs">{formatDistanceToNow(new Date(message.createdAt), {addSuffix: true}).replace('about', '')}</span>
                    </div>
-              </div>
+              </motion.div>
           })}
+          </AnimatePresence>
         </> 
        )}
     {/* <div className="bg-red-400 w-10 h-screen shrink-0"/> */}

@@ -31,7 +31,7 @@ export default function LeaveButton({chatId, username}: {chatId: string, usernam
       })
     
 
-return <button onClick={() => leaveChat.mutate({chatId})} disabled={leaveChat.isPending} className="flex-center gap-2 group bg-red-700 hover:bg-red-600 p-2 rounded-lg font-semibold">
+return <button onClick={() => leaveChat.mutate({chatId})} disabled={leaveChat.isPending} className="flex-center gap-2 group bg-red-700 hover:bg-red-600 p-2 rounded-xl font-semibold">
           {leaveChat.isPending ? (
                 <>
                     <div className='size-5 border-[3px] border-white/50 border-t-white rounded-full animate-spin'/> Leaving...

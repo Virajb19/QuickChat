@@ -36,8 +36,10 @@ export const userRouter = createTRPCRouter({
     return await ctx.db.chat.findMany({ where: { ownerId: parseInt(ctx.session.user.id)}, orderBy: {createdAt: 'asc'}, include: {participants: {select: {id: true}}}})
   }),
   deleteChat: protectedProcedure.input(z.object({chatId: z.string()})).mutation(async ({ctx, input}) => {
-      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true}})
+      const userId = parseInt(ctx.session.user.id)
+      const chat = await ctx.db.chat.findUnique({where: {id: input.chatId}, select: { id: true, ownerId: true}})
       if(!chat) throw new TRPCError({code: 'NOT_FOUND', message: 'chat not found'})
+      // if(chat.ownerId !== userId) throw new TRPCError({code: 'UNAUTHORIZED', message: 'unauthorized'})
       await ctx.db.chat.delete({where: { id: chat.id}})
       return { chatId: chat.id}
   }),

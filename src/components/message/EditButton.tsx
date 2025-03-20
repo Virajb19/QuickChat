@@ -10,12 +10,13 @@ import { editMessageSchema } from "~/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { twMerge } from "tailwind-merge";
 import { useSocket } from "~/hooks/useSocket";
+import { useSocketStore } from "~/lib/store";
 
 type Input = z.infer<typeof editMessageSchema>
 
 export default function EditButton({messageId, chatId, prevContent}: {messageId: string, chatId: string, prevContent: string}) {
 
-   const socket = useSocket(chatId)
+   const { socket } = useSocketStore()
 
     const [open, setOpen] = useState(false)
     const utils = api.useUtils()
@@ -40,7 +41,7 @@ export default function EditButton({messageId, chatId, prevContent}: {messageId:
       onSuccess: () => {
          setOpen(false)
          toast.success('Edited')
-         socket.emit('edit:message', {messageId, newContent: data.newContent})
+         socket?.emit('edit:message', {messageId, newContent: data.newContent})
       },
     })
   }
@@ -61,7 +62,7 @@ export default function EditButton({messageId, chatId, prevContent}: {messageId:
                  render={({ field, fieldState, formState }) => (
                     <FormItem className='flex flex-col gap-1 grow'>
                      <FormControl>
-                       <textarea className={twMerge('outline-none w-full block h-40 resize-none dark:bg-black px-3 py-1 placeholder:text-lg placeholder:font-semibold rounded-md focus:outline-none border focus:border-transparent focus:ring-[3px] focus:ring-blue-600 duration-200', 
+                       <textarea className={twMerge('outline-none w-full block h-40 resize-none dark:bg-black px-3 py-1 placeholder:text-lg placeholder:font-semibold rounded-md focus:outline-none border focus:border-transparent focus:ring-[3px] focus:ring-blue-600 duration-200 whitespace-pre-wrap leading-relaxed', 
                         fieldState.error && 'focus:ring-red-600')} placeholder='Enter chat title' {...field}/>
                      </FormControl>
                      <FormMessage />

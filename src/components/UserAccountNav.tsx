@@ -13,6 +13,7 @@ import { signOut, useSession } from 'next-auth/react';
 import UserAvatar from './UserAvatar';
 import Link from "next/link";
 import { toast } from "sonner";
+import { useMutation } from '@tanstack/react-query'
 
 export default function UserAccountNav() {
 
@@ -25,6 +26,12 @@ export default function UserAccountNav() {
 //             toast.error(err.message)
 //         }
 //     })
+
+   const updateStatus = useMutation({
+     mutationFn: async () => {
+        
+     }
+   })
 
     const {data: session} = useSession()
     const user = session?.user
