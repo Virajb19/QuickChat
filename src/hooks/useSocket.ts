@@ -45,8 +45,18 @@ export const useSocket = (chatId: string) => {
       //  }
 
        if(!socket) return
-
-       socket.on("connect", () => console.log("Connected to socket"))
+          // This makes sure that event listeners are set up only once 
+          // But what about connect event is it singleton??
+       socket.on("connect", () => {
+          console.log("Connected to socket")
+          socket.off('send:message').on('send:message', sendMessage)
+          socket.off('delete:message').on('delete:message', deleteMessage)
+          socket.off('edit:message').on('edit:message', editMessage)
+          socket.off('join:chat').on('join:chat', joinChat)
+          socket.off('leave:chat').on('leave:chat', leaveChat)
+          socket.off('delete:chat').on('delete:chat',deleteChat)
+          socket.off('user:statusChange').on('user:statusChange', userStatusChange)
+       })
        socket.on("disconnect", () => console.log("Socket disconnected"))
 
        const sendMessage = (msg: message) => {
@@ -88,15 +98,15 @@ export const useSocket = (chatId: string) => {
         utils.chat.getParticipants.setData({chatId}, (participants) => participants?.map(p => p.userId === userId ? {...p, isOnline: !p.isOnline} : p))
        }
 
-      //  toast.success('Setting up listeners')
+      //  socket.off('send:message').on('send:message', sendMessage)
+      //  socket.off('delete:message').on('delete:message', deleteMessage)
+      //  socket.off('edit:message').on('edit:message', editMessage)
+      //  socket.off('join:chat').on('join:chat', joinChat)
+      //  socket.off('leave:chat').on('leave:chat', leaveChat)
+      //  socket.off('delete:chat').on('delete:chat',deleteChat)
+      //  socket.off('user:statusChange').on('user:statusChange', userStatusChange)
 
-       socket.off('send:message').on('send:message', sendMessage)
-       socket.off('delete:message').on('delete:message', deleteMessage)
-       socket.off('edit:message').on('edit:message', editMessage)
-       socket.off('join:chat').on('join:chat', joinChat)
-       socket.off('leave:chat').on('leave:chat', leaveChat)
-       socket.off('delete:chat').on('delete:chat',deleteChat)
-       socket.off('user:statusChange').on('user:statusChange', userStatusChange)
+      //  toast.success('Setting up listeners')
   
        return () => {
          if(socket) {
