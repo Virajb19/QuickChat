@@ -49,7 +49,7 @@ export default function MessageMenu({image,name,isUserMessage,chatId,messageId, 
                </DropdownMenuTrigger>
            ) : (
                 <Tooltip>
-                    <TooltipTrigger disabled={isUserMessage}>
+                    <TooltipTrigger disabled={isUserMessage} className="shrink-0">
                         {avatar}
                     </TooltipTrigger>
                       <TooltipContent side="top" sideOffset={10} className="border-[3px] rounded-sm text-lg text-black dark:text-white font-semibold border-blue-600 bg-neutral-100 dark:bg-neutral-900">

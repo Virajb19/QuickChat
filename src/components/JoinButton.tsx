@@ -55,8 +55,8 @@ async function onSubmit(data: Input) {
 
   return <Dialog open={open} onOpenChange={state => setOpen(state)}>
       <DialogTrigger>
-          <button className="px-3 py-2 rounded-lg flex items-center gap-2 group font-bold bg-blue-600">
-             <MessageCircle className="group-hover:rotate-12 duration-200"/> Join a Chat
+          <button className="px-3 py-2 rounded-lg flex items-center gap-2 group font-bold bg-blue-600 mb:text-sm">
+             <MessageCircle className="group-hover:rotate-12 duration-200 mb:size-5"/> Join a Chat
           </button>
       </DialogTrigger>
       <DialogContent className="shadow-lg shadow-blue-600">

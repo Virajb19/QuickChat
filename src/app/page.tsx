@@ -14,9 +14,9 @@ export default async function HomePage() {
   const chatCount = session?.user.id ? await db.chat.count({where: {ownerId: parseInt(session?.user.id)}}) : 0
 
   return <div className="w-full min-h-screen pt-28">
-          <div className="flex-center flex-col gap-3">
-              <h1 className="text-5xl font-extrabold text-blue-500">Instant Chat Links for Seamless Conversations</h1>
-              <p className="text-xl font-semibold">QuickChat makes it effortless to create secure chat links and start
+          <div className="flex-center text-center flex-col gap-3 mb:gap-7">
+              <h1 className="text-5xl mb:text-2xl font-extrabold text-blue-500">Instant Chat Links for Seamless Conversations</h1>
+              <p className="text-xl mb:text-lg font-semibold">QuickChat makes it effortless to create secure chat links and start
               conversations in seconds.</p>
              {isAuth ? (
                   <div className="flex items-center gap-2">

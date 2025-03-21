@@ -22,7 +22,7 @@ export default function MessageInput({chatId, userId}: {chatId: string, userId: 
     const utils = api.useUtils()
     const createMessage = api.user.createMessage.useMutation({
         onSuccess: (message) => {
-           socket.emit('send:message', message)
+           socket?.emit('send:message', message)
         },
         onError: (err) => {
             console.error(err)

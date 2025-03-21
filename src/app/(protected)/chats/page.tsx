@@ -43,15 +43,15 @@ export default function ChatsPage() {
               return <motion.li initial={{opacity: 0, scale: 0.9}} animate={{opacity: 1, scale: 1}} transition={{duration: 0.3, delay: 0.1 * i, type: 'spring', bounce: 0.5}}
               key={chat.id} className="border-2 bg-accent dark:bg-card flex flex-col gap-4 p-3 rounded-lg overflow-hidden hover:border-blue-600 duration-200">
                   <div className="flex items-center justify-between">
-                      <h2 className="text-3xl font-bold">{chat.title}</h2>
+                      <h2 className="text-3xl mb:text-2xl font-bold">{chat.title}</h2>
                       <ChatMenu chatId={chat.id}/>
                   </div>
                   <div className="flex items-end justify-between">
                     <div className="flex flex-col items-start font-semibold">
                       <p className="truncate">Passcode:- <span className="text-xl">{chat.passcode}</span></p>
-                      <p>Created At:- <span className="text-xl">{new Date(chat.createdAt).toLocaleDateString()}</span></p>
+                      <p>Created At:- <span className="text-xl mb:text-base">{new Date(chat.createdAt).toLocaleDateString()}</span></p>
                     </div>
-                     <p className="text-lg font-semibold flex items-center">Total members: <span className="font-bold text-xl ml-2 text-blue-400"> {chat.participants.length}</span></p>
+                     <p className="text-lg mb:text-sm font-semibold flex items-center">Total members: <span className="font-bold text-xl ml-2 text-blue-400"> {chat.participants.length}</span></p>
                   </div>
               </motion.li>
             })}

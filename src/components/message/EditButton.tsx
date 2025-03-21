@@ -62,8 +62,8 @@ export default function EditButton({messageId, chatId, prevContent}: {messageId:
                  render={({ field, fieldState, formState }) => (
                     <FormItem className='flex flex-col gap-1 grow'>
                      <FormControl>
-                       <textarea className={twMerge('outline-none w-full block h-40 resize-none dark:bg-black px-3 py-1 placeholder:text-lg placeholder:font-semibold rounded-md focus:outline-none border focus:border-transparent focus:ring-[3px] focus:ring-blue-600 duration-200 whitespace-pre-wrap leading-relaxed', 
-                        fieldState.error && 'focus:ring-red-600')} placeholder='Enter chat title' {...field}/>
+                       <textarea className={twMerge('outline-none w-full block h-40 resize-none dark:bg-black px-3 py-1 placeholder:text-lg placeholder:font-semibold rounded-md focus:outline-none border focus:border-transparent focus:ring-[3px] focus:ring-blue-600 duration-200 whitespace-pre-wrap break-words leading-relaxed', 
+                        fieldState.error && 'focus:ring-red-600')} placeholder='Edit your message' {...field}/>
                      </FormControl>
                      <FormMessage />
                     </FormItem>

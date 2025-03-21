@@ -1,7 +1,7 @@
 import {Trash} from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { useSocket } from '~/hooks/useSocket'
+import { useSocketStore } from '~/lib/store'
 import { api } from '~/trpc/react'
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 export default function DeleteButton({chatId, setIsDeleting}: Props) {
 
-  const socket = useSocket(chatId)
+  const { socket } = useSocketStore()
 
   const {data: session} = useSession()
  
@@ -20,7 +20,7 @@ export default function DeleteButton({chatId, setIsDeleting}: Props) {
     onMutate: () => setIsDeleting(true),
     onSuccess: () => {
       toast.success('Deleted', { position: 'bottom-right'})
-      socket.emit('delete:chat', session?.user.name)
+      socket?.emit('delete:chat', session?.user.name)
     },
     onError: (err) => {
       console.error(err)

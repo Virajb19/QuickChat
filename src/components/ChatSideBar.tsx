@@ -7,7 +7,6 @@ import { api } from "~/trpc/react";
 import { useRouter } from 'nextjs-toploader/app'
 import { toast } from "sonner";
 import Link from "next/link";
-import { useSocket } from "~/hooks/useSocket";
 import { useSession } from "next-auth/react";
 import { colors } from '~/lib/utils'
 import { Skeleton } from "./ui/skeleton";
@@ -73,7 +72,7 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
     }
   })
 
-  return <div className="flex flex-col gap-1 w-1/4 border-r-2">
+  return <div className="flex flex-col gap-1 w-1/4 mb:w-full border-r-2">
         <div className="flex flex-col gap-1 items-start border-b border-zinc-500 p-3">
             <div className="flex items-center gap-3">
                 <h4 className="text-2xl uppercase font-bold truncate">{chat.title}</h4>
@@ -86,7 +85,7 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
                <span className="text-base font-semibold text-gray-400">Show online</span>
             </div>
         </div>
-        <div className="flex flex-col p-1 gap-2 h-[calc(90vh-19rem)] overflow-y-scroll border-b-2 border-zinc-400">
+        <div className="flex flex-col p-1 gap-2 h-[calc(90vh-19rem)] mb:h-[calc(90vh-16rem)] overflow-y-scroll border-b-2 border-zinc-400">
              {(isLoading || !filteredParticipants) ? (
                   <>
                      {Array.from({length: 5}).map((_,i) => {

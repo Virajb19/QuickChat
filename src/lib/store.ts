@@ -13,6 +13,22 @@ export const useLoadingState = create<loadingState>((set, get) => ({
      }
 }))
 
+type SidebarState = {
+   isSidebarOpen: boolean
+   toggleSidebar: () => void,
+   closeSideBar: () => void
+ }
+
+export const useSidebarState = create<SidebarState>((set,get) => ({
+     isSidebarOpen: false,
+     toggleSidebar: () => {
+        set({isSidebarOpen: !get().isSidebarOpen})
+     },
+     closeSideBar: () => {
+       set({isSidebarOpen: false})
+     }
+}))
+
 type SocketState = {
     socket: Socket | null
     chatId: string | null

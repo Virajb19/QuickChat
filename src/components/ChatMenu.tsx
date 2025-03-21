@@ -28,7 +28,7 @@ export default function ChatMenu({chatId} : {chatId: string}) {
            {isDeleting ? (
                <div className="size-5 border-[3px] border-red-400/30 border-t-red-500 rounded-full animate-spin" />           
               ) : (
-                  <EllipsisVertical />
+                  <EllipsisVertical className='mb:size-5'/>
            )}
        </DropdownMenuTrigger>
        <DropdownMenuContent align='end' className='m-2 min-w-44 z-[99999] rounded-md bg-neutral-100 dark:bg-neutral-900 border-[3px] border-blue-500'>

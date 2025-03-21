@@ -62,8 +62,8 @@ export default function CreateChatButton() {
 
   return <Dialog open={open} onOpenChange={state => setOpen(state)}>
         <DialogTrigger>
-             <button className="font-bold bg-black text-white dark:bg-white dark:text-black px-3 py-2 rounded-lg flex items-center gap-2 group">
-                <Plus className="group-hover:scale-110 duration-200"/>Create a chat
+             <button className="font-bold bg-black text-white dark:bg-white dark:text-black px-3 py-2 rounded-lg flex items-center gap-2 group mb:text-sm">
+                <Plus className="group-hover:scale-110 duration-200 mb:size-5"/>Create a chat
              </button>
         </DialogTrigger>
         <DialogContent className="shadow-lg shadow-blue-600">

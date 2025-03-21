@@ -47,9 +47,14 @@ export function OAuthButton({label, provider, loading, setLoading}: Props) {
       onClick={async () => {
         try {
           setLoading(true)
-          await signIn(provider, { callbackUrl: "/" });
+          const result = await signIn(provider, { callbackUrl: "/" });
+          if(result?.error) {
+             throw new Error(result.error)
+          }
           // toast.success("Signed in successfully");
-          updateStatus.mutate({status: true})
+          setTimeout(() => {
+             updateStatus.mutate({status: true})
+          }, 5000)
         } catch (error) {
           toast.error("Something went wrong !!!");
           setLoading(false)
