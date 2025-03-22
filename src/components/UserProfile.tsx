@@ -22,7 +22,7 @@ export default function UserProfile({ session, joinedChats }: Props) {
     // const {data: session, status} = useSession()
 
   return  <motion.div initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration: 1, ease: 'easeInOut', type: 'spring', damping: '10'}} 
-  className="flex flex-col bg-card rounded-lg border-2 w-[90%] md:w-3/4 lg:w-1/3 max-w-5xl shadow-lg shadow-blue-600">
+  className="flex flex-col bg-card rounded-lg border-2 w-[90%] md:w-3/4 lg:w-1/3 max-w-5xl shadow-lg shadow-blue-600 mb-10">
         <div className="flex flex-col items-center gap-3 p-5">
             <h3 className="uppercase font-bold underline">Profile</h3>
             {session.user.image ? ( 
@@ -81,6 +81,7 @@ export default function UserProfile({ session, joinedChats }: Props) {
                        })}   
                     </>
                  )}
+                 {/* <div className="bg-red-400 w-10 h-screen shrink-0"/> */}
              </div>
         </div>
 </motion.div>   

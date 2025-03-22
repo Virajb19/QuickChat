@@ -47,10 +47,10 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
 
   const router = useRouter()
 
-  const {data: chatParticipants, isLoading, isError} = api.chat.getParticipants.useQuery({chatId: chat.id}, {refetchInterval: 5 * 60 * 1000})
+  const {data: chatParticipants, isLoading, isError} = api.chat.getParticipants.useQuery({chatId: chat.id}, {refetchInterval: 15 * 1000})
 
   const filteredParticipants = useMemo(() => {
-       return showOnline ? chatParticipants?.filter(p => p.isOnline) : chatParticipants
+       return (showOnline ? chatParticipants?.filter(p => p.isOnline) : chatParticipants) ?? []
   }, [showOnline, chatParticipants])
 
   const owner = useMemo(() => {
@@ -78,12 +78,14 @@ export default function ChatSideBar({participants, chat, userId}: Props) {
                 <h4 className="text-2xl uppercase font-bold truncate">{chat.title}</h4>
                 <span className="text-gray-300 font-semibold text-lg">({participants.length})</span>
             </div>
-            <div className="flex items-center gap-2">
-            <button onClick={() => setShowOnline(!showOnline)} className={twMerge("size-5 border-2 border-gray-400 rounded-sm flex-center", showOnline && 'bg-white border-transparent')}>
-                   {showOnline && <Check className="text-[#1f1e20]" strokeWidth={3}/>}
-               </button>
-               <span className="text-base font-semibold text-gray-400">Show online</span>
-            </div>
+           {filteredParticipants?.length > 0 && (
+                <div className="flex items-center gap-2">
+                <button onClick={() => setShowOnline(!showOnline)} className={twMerge("size-5 border-2 border-gray-400 rounded-sm flex-center", showOnline && 'bg-white border-transparent')}>
+                       {showOnline && <Check className="text-[#1f1e20]" strokeWidth={3}/>}
+                   </button>
+                   <span className="text-base font-semibold text-gray-400">Show online</span>
+                </div>
+           )}
         </div>
         <div className="flex flex-col p-1 gap-2 h-[calc(90vh-19rem)] mb:h-[calc(90vh-16rem)] overflow-y-scroll border-b-2 border-zinc-400">
              {(isLoading || !filteredParticipants) ? (

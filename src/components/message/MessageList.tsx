@@ -28,7 +28,7 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
   }, [messages]) 
 
   // Try using isFetching or isRefetching
-  if(isLoading || !messages) return <div className="flex-center grow">
+  if(isLoading || !messages) return <div className="flex-center grow h-full">
       <Loader2 className="size-12 text-blue-600 animate-spin"/>
   </div>
 
@@ -57,7 +57,7 @@ export default function MessageList({chatId, userId}: {chatId: string, userId: n
                   <MessageMenu chatId={chatId} messageId={message.id} image={image} name={name} isUserMessage={isUserMessage} content={message.content}/>
                    <div className="flex flex-col items-start gap-1">
                       <motion.p key={i} initial={{opacity: 0, scale: 0.8}} animate={{opacity:1, scale: 1}} transition={{duration: 0.2, type: 'spring', bounce: 0.7}}
-                          className={twMerge("max-w-1/2 break-words font-medium text-left p-2 rounded-md bg-blue-600/20", isUserMessage && 'bg-blue-600')}>
+                          className={twMerge("max-w-1/2 break-words font-medium text-left p-2 rounded-md bg-blue-600/40", isUserMessage && 'bg-blue-600')}>
                             {message.content.split('\n').map(line => {
                               return <p className="whitespace-pre-line">{line}</p>
                             })}

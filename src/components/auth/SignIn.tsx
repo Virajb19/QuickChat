@@ -29,10 +29,9 @@ export default function SignIn() {
 
   const { socket } = useSocketStore()
 
-  const utils = api.useUtils()
-
   const updateStatus = api.user.updateStatus.useMutation({
       onSuccess: ({chatIds, userId}) => {
+      // if(!socket) return toast.error('Socket not connected')
       socket?.emit('user:statusChange', chatIds, userId)
     },
     onError: (err) => {
@@ -63,7 +62,7 @@ export default function SignIn() {
     updateStatus.mutate({status: true})
   }
 
-  return <div className="w-full min-h-screen flex-center text-lg">
+  return <div className="w-full min-h-screen flex-center pt-20 text-lg">
 
     <motion.div initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration: 0.7, ease: 'easeInOut', type: 'spring', damping: '10'}} 
     className='w-[90%] sm:w-1/3 max-w-3xl z-30'>

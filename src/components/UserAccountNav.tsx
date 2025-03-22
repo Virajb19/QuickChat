@@ -90,7 +90,7 @@ export default function UserAccountNav() {
                     <DropdownMenuItem className='outline-none cursor-pointer' onClick={async () => {
                         // do not wait this might delay signOut
                         // await updateStatus.mutateAsync({status: false})
-                        updateStatus.mutate({status: false})
+                        await updateStatus.mutateAsync({status: false})
                         signOut({callbackUrl: '/'})
                     }}>
                        <span className='flex items-center gap-2 text-base font-bold transition-all duration-300 hover:text-red-500'><LogOut className='size-4' strokeWidth={3}/>Log out </span>

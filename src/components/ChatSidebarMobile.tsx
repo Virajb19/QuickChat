@@ -28,7 +28,7 @@ export default function ChatSidebarMobile({chat,participants,userId}: Props) {
     }, [])
 
   return <motion.div ref={sidebarRef} initial={{x: '-100%'}} animate={{x: 0}} exit={{x: '-100%'}} transition={{duration: 0.3, ease: 'easeInOut'}}
-       className="border lg:hidden absolute left-0 right-16 top-24 bottom-20 max-w-[300px] z-[200] bg-background rounded-r-xl border-gray-700 overflow-hidden">
+       className="border lg:hidden absolute left-0 right-16 top-24 bottom-8 max-w-[300px] z-[200] bg-background rounded-r-xl border-gray-700 overflow-hidden">
       <ChatSideBar chat={chat} participants={participants} userId={userId}/>
   </motion.div>
 }
