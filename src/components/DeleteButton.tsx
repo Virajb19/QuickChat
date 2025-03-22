@@ -1,6 +1,7 @@
 import {Trash} from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
+import { useSocket } from '~/hooks/useSocket'
 import { useSocketStore } from '~/lib/store'
 import { api } from '~/trpc/react'
 
@@ -11,7 +12,9 @@ type Props = {
 
 export default function DeleteButton({chatId, setIsDeleting}: Props) {
 
-  const { socket } = useSocketStore()
+  // use socket from useSocket why ???
+  // const { socket } = useSocketStore()
+  const socket = useSocket(chatId)
 
   const {data: session} = useSession()
  
@@ -20,6 +23,7 @@ export default function DeleteButton({chatId, setIsDeleting}: Props) {
     onMutate: () => setIsDeleting(true),
     onSuccess: () => {
       toast.success('Deleted', { position: 'bottom-right'})
+      // if(!socket) return toast.error('Socket not connected')
       socket?.emit('delete:chat', session?.user.name)
     },
     onError: (err) => {

@@ -49,13 +49,13 @@ export const useSocket = (chatId: string) => {
           // But what about connect event is it singleton??
        socket.on("connect", () => {
           console.log("Connected to socket")
-          socket.off('send:message').on('send:message', sendMessage)
-          socket.off('delete:message').on('delete:message', deleteMessage)
-          socket.off('edit:message').on('edit:message', editMessage)
-          socket.off('join:chat').on('join:chat', joinChat)
-          socket.off('leave:chat').on('leave:chat', leaveChat)
-          socket.off('delete:chat').on('delete:chat',deleteChat)
-          socket.off('user:statusChange').on('user:statusChange', userStatusChange)
+         //  socket.off('send:message').on('send:message', sendMessage)
+         //  socket.off('delete:message').on('delete:message', deleteMessage)
+         //  socket.off('edit:message').on('edit:message', editMessage)
+         //  socket.off('join:chat').on('join:chat', joinChat)
+         //  socket.off('leave:chat').on('leave:chat', leaveChat)
+         //  socket.off('delete:chat').on('delete:chat',deleteChat)
+         //  socket.off('user:statusChange').on('user:statusChange', userStatusChange)
        })
        socket.on("disconnect", () => console.log("Socket disconnected"))
 
@@ -70,6 +70,7 @@ export const useSocket = (chatId: string) => {
           utils.chat.getMessages.setData({chatId}, (messages) => (messages?.filter(msg => msg.id !== messageId)))
        }
 
+       // do something client side
        const editMessage = ({messageId, newContent}: {messageId: string, newContent: string}) => {
            utils.chat.getMessages.setData({chatId}, (messages) => (
              messages?.map(msg => msg.id === messageId ? {...msg, content: newContent} : msg)
@@ -90,6 +91,7 @@ export const useSocket = (chatId: string) => {
        }
 
        const deleteChat = (name: string) => {
+         //  toast.success('In delete chat')
           router.push('/')
           toast.success(`${name} deleted the chat`)
        }
@@ -98,13 +100,14 @@ export const useSocket = (chatId: string) => {
         utils.chat.getParticipants.setData({chatId}, (participants) => participants?.map(p => p.userId === userId ? {...p, isOnline: !p.isOnline} : p))
        }
 
-      //  socket.off('send:message').on('send:message', sendMessage)
-      //  socket.off('delete:message').on('delete:message', deleteMessage)
-      //  socket.off('edit:message').on('edit:message', editMessage)
-      //  socket.off('join:chat').on('join:chat', joinChat)
-      //  socket.off('leave:chat').on('leave:chat', leaveChat)
-      //  socket.off('delete:chat').on('delete:chat',deleteChat)
-      //  socket.off('user:statusChange').on('user:statusChange', userStatusChange)
+       // listen here only not in connect callback
+       socket.off('send:message').on('send:message', sendMessage)
+       socket.off('delete:message').on('delete:message', deleteMessage)
+       socket.off('edit:message').on('edit:message', editMessage)
+       socket.off('join:chat').on('join:chat', joinChat)
+       socket.off('leave:chat').on('leave:chat', leaveChat)
+       socket.off('delete:chat').on('delete:chat',deleteChat)
+       socket.off('user:statusChange').on('user:statusChange', userStatusChange)
 
       //  toast.success('Setting up listeners')
   
