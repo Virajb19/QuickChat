@@ -1,20 +1,31 @@
 import { LogOut } from "lucide-react"
 import { useSession } from "next-auth/react"
+import { usePathname } from "next/navigation"
 import { useRouter } from "nextjs-toploader/app"
 import { toast } from "sonner"
+import { useSocket } from "~/hooks/useSocket"
 import { useSocketStore } from "~/lib/store"
 import { api } from "~/trpc/react"
 
 export default function LeaveButton({chatId, username}: {chatId: string, username: string}) {
 
-    // Import from zustand store directly useSocketStore()
+     // Manipulate socket connections based on the page user is on 
+    // const pathname = usePathname()
 
-     const { socket } = useSocketStore()
+     const { socket, connectSocket, chatId: currentChatId } = useSocketStore()
     // const {data: session} = useSession()
+
+    // const socket = useSocket(chatId)
     const router = useRouter()
     // const utils = api.useUtils()
 
     const leaveChat = api.user.leaveChat.useMutation({
+        onMutate: async () => {
+           if(!socket || currentChatId !== chatId) {
+             console.log(`Switching socket connection to chat: ${chatId}`); // use Toast
+             await connectSocket(chatId)
+           }
+        },
         onSuccess: ({participantId, title}) => {
            toast.success(`Left the chat ${title}`)
            socket?.emit('leave:chat', username, participantId)

@@ -25,7 +25,7 @@ export default function SignIn() {
   const router = useRouter()
 
   // shared loading state for OAuth buttons
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const { socket } = useSocketStore()
 
@@ -49,12 +49,12 @@ export default function SignIn() {
     
     setLoading(true)
     const res = await signIn('credentials',{...data, redirect: false})
+    setLoading(false)
+    
     if(res?.error) {
-       setLoading(false)
        const error = ['User not found. Please check your email !', 'Incorrect password. Try again !!!'].includes(res?.error ?? '') ? res?.error : 'Invalid credentials!!!'
        return toast.error(error)
     }
-    setLoading(false)
     form.reset()
     router.push('/')
     router.refresh()

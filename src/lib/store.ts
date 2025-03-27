@@ -32,14 +32,14 @@ export const useSidebarState = create<SidebarState>((set,get) => ({
 type SocketState = {
     socket: Socket | null
     chatId: string | null
-    connectSocket: (chatId: string) => void
+    connectSocket: (chatId: string) => Promise<void>
     disconnectSocket: () => void
   }
 
 export const useSocketStore = create<SocketState>((set,get) => ({
      socket: null,
      chatId: null,
-     connectSocket: (chatId: string) => {
+     connectSocket: async (chatId: string) => {
         const existingSocket = get().socket
 
         if(existingSocket && get().chatId === chatId) return

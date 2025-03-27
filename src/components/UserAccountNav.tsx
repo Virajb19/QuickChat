@@ -62,24 +62,24 @@ export default function UserAccountNav() {
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem>
-                    <Link href={'/profile'} className="flex items-center gap-2 text-base font-bold transition-all duration-300 hover:text-blue-500">
+                    <DropdownMenuItem className="p-0">
+                    <Link href={'/profile'} className="flex items-center gap-2 p-1.5 w-full text-base font-bold transition-all duration-300 hover:text-blue-500">
                             <User className="size-4" strokeWidth={3}/> Profile
                          </Link>
                     </DropdownMenuItem>
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem>
-                      <Link href={'/chats'} className="flex items-center gap-2 text-base font-bold transition-all duration-300 hover:text-blue-500">
+                    <DropdownMenuItem className="p-0">
+                      <Link href={'/chats'} className="flex items-center gap-2 text-base p-1.5 w-full font-bold transition-all duration-300 hover:text-blue-500">
                             <MessagesSquare className="size-4" strokeWidth={3}/> Chats
                          </Link>
                     </DropdownMenuItem>
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem>
-                         <Link href={'/'} className="flex items-center gap-2 text-base font-bold transition-all duration-300 hover:text-blue-500">
+                    <DropdownMenuItem className="p-0"> 
+                         <Link href={'/'} className="flex items-center gap-2 text-base p-1.5 w-full font-bold transition-all duration-300 hover:text-blue-500">
                             <Home className="size-4" strokeWidth={3}/> Home
                          </Link>
                     </DropdownMenuItem>
@@ -87,13 +87,13 @@ export default function UserAccountNav() {
                     <DropdownMenuSeparator />
 
                     {/* disabled={updateStatus.isPending} */}
-                    <DropdownMenuItem className='outline-none cursor-pointer' onClick={async () => {
+                    <DropdownMenuItem className='outline-none cursor-pointer p-0' onClick={async () => {
                         // do not wait this might delay signOut
                         // await updateStatus.mutateAsync({status: false})
                         await updateStatus.mutateAsync({status: false})
                         signOut({callbackUrl: '/'})
                     }}>
-                       <span className='flex items-center gap-2 text-base font-bold transition-all duration-300 hover:text-red-500'><LogOut className='size-4' strokeWidth={3}/>Log out </span>
+                       <span className='flex items-center gap-2 text-base font-bold p-1.5 w-full transition-all duration-300 hover:text-red-500'><LogOut className='size-4' strokeWidth={3}/>Log out </span>
                        </DropdownMenuItem>
 
                     </DropdownMenuContent>

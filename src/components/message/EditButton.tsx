@@ -9,8 +9,8 @@ import { z } from "zod";
 import { editMessageSchema } from "~/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { twMerge } from "tailwind-merge";
-import { useSocket } from "~/hooks/useSocket";
 import { useSocketStore } from "~/lib/store";
+import { Textarea } from '~/components/ui/textarea'
 
 type Input = z.infer<typeof editMessageSchema>
 

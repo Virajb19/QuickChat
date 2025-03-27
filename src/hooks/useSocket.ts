@@ -29,7 +29,7 @@ export const useSocket = (chatId: string) => {
 
    useEffect(() => {
       if (!socket || prevChatId !== chatId) {
-        connectSocket(chatId);
+         connectSocket(chatId);
       }
       // router.refresh()
    }, [chatId,connectSocket])

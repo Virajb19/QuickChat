@@ -23,11 +23,15 @@ type SignUpData = z.infer<typeof SignUpSchema>
 export default function SignUp() {
  
   const utils = api.useUtils()
-  const signup = api.user.signup.useMutation()
-
   const router = useRouter()
 
+  // use zustand Store
   const [loading, setLoading] = useState(false)
+
+  const signup = api.user.signup.useMutation({
+     onMutate: () => setLoading(true),
+     onSettled: () => setLoading(false)
+  })
 
   const [username, setUsername] = useState('')
   const debounced = useDebounceCallback(setUsername, 500)

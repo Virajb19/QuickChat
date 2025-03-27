@@ -1,6 +1,8 @@
-# GitChat
+# QuickChat
 
 A real-time chat app built using Socket IO
+
+https://github.com/user-attachments/assets/73361d68-1565-4c9a-a4ab-10461ddc06de
 
 ## How to run locally ?
 
@@ -81,7 +83,3 @@ GOOGLE_CLIENT_ID="" GOOGLE_CLIENT_SECRET=""
 Go to [https://github.com/Virajb19/Websocket-server]
 
 This is express application. Clone it and then start the server
-
-Make sure to add the this variable
-
-NEXT_PUBLIC_SOCKET_SERVER_URL="http://localhost:5000"
