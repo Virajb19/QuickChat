@@ -2,7 +2,7 @@
 
 A real-time chat app built using Socket IO
 
-https://github.com/user-attachments/assets/73361d68-1565-4c9a-a4ab-10461ddc06de
+https://github.com/user-attachments/assets/16683ccd-0cc7-4208-a67f-a904d8195cc9
 
 ## How to run locally ?
 
